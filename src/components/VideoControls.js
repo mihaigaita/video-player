@@ -1,21 +1,19 @@
-import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-
-import IconButton from '@material-ui/core/IconButton';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
-import VolumeDownIcon from '@material-ui/icons/VolumeDown';
-import VolumeOffIcon from '@material-ui/icons/VolumeOff';
-import VolumeUpIcon from '@material-ui/icons/VolumeUp';
-import SettingsIcon from '@material-ui/icons/Settings';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+
+import VideoControlButton from './VideoControlButton';
+import VideoProgress from './VideoProgress';
+import VolumeControl from './VolumeControl';
+import SettingsControl from './SettingsControl';
+import { formatSecondsToTimeDuration } from '../utils/functions';
+
 
 const useVideoStyles = makeStyles((theme) => ({
   actionFeedbackWrapper: {
@@ -58,49 +56,7 @@ const useVideoStyles = makeStyles((theme) => ({
   controlGroup: {
     display: 'flex',
     alignItems: 'center',
-  },
-  progressSliderRoot: {
-    padding: theme.spacing(2, 0),
-  },
-  progressSliderThumb: {
-    opacity: 0,
-    '&:hover, &$active': {
-      marginTop: -4,
-      opacity: 1,
-    },
-    '&:focus, &:hover, &$active': {
-      boxShadow: 'unset',
-    }
-  },
-  progressSliderActive: {
-
-  },
-  progressSliderTrack: {
-    height: 4,
-  },
-  progressSliderRail: {
-    height: 4,
-    backgroundColor: 'gray',
-    opacity: 0.2,
-  },
-  volumeSliderRoot: {
-    display: 'inline-block',
-    margin: theme.spacing(0, 2),
-    width: 60,
-  },
-  volumeSliderTrack: {
-    height: 4,
-  },
-  volumeSliderRail: {
-    height: 4,
-    backgroundColor: 'gray',
-  },
-  volumeSliderThumb: {
-    marginTop: -4,
-    '&:focus, &:hover, &$active': {
-      boxShadow: 'unset',
-    }
-  },
+  }, 
   textWrapper: {
     paddingTop: theme.spacing(1),
     display: 'flex',
@@ -110,51 +66,6 @@ const useVideoStyles = makeStyles((theme) => ({
     lineHeight: '100%',
   },
 }));
-
-const useIconStyles = makeStyles((theme) => ({
-  iconRoot: {
-    padding: 0,
-    '&:hover': {
-      backgroundColor: 'unset',
-    }
-  }
-}));
-
-const CustomIconButton = ({ children, ...otherProps }) => {
-  const classes = useIconStyles();
-
-  return (
-    <IconButton 
-      classes={{ root: classes.iconRoot}} 
-      disableFocusRipple 
-      disableRipple
-      color="secondary"
-    >
-      {React.cloneElement(React.Children.only(children), otherProps)}
-    </IconButton>
-  );
-};
-
-const ValueLabelComponent = ({
-  children,
-  open,
-  value,
-}) => (
-  <Tooltip open={open} enterTouchDelay={0} placement="top" title={value}>
-    {children}
-  </Tooltip>
-);
-
-const formatSecondsToTimeDuration = (value) => {
-  const hours = Math.floor(value / 60 / 24);
-  const minutes = Math.floor(value / 60 % 24);
-  const seconds = value % 60;
-
-  const hoursText = hours ? `${hours}:` : '';
-  const minutesSecondsText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-  return `${hoursText}${minutesSecondsText}`;
-};
 
 const VideoControls = ({
   playbackState = 'paused',
@@ -176,59 +87,21 @@ const VideoControls = ({
       </div>
 
       <div className={classes.controlsAndProgress}>
-        <Slider
-          component="div"
-          classes={{
-            root: classes.progressSliderRoot,
-            rail: classes.progressSliderRail,
-            track: classes.progressSliderTrack,
-            thumb: classes.progressSliderThumb,
-            active: classes.progressSliderActive,
-          }}
-          min={0}
-          step={1}
-          max={durationSeconds}
-          // onChange={handleChange}
-          valueLabelDisplay="auto"
-          getAriaValueText={formatSecondsToTimeDuration}
-          ValueLabelComponent={ValueLabelComponent}
-          valueLabelFormat={formatSecondsToTimeDuration}
-          aria-label="progress-slider"
-          value={currentPositionSeconds}
+        <VideoProgress
+          durationSeconds={durationSeconds}
+          currentPositionSeconds={currentPositionSeconds}
         />
 
         <div className={classes.buttons}>
           <div className={classes.controlGroup}>
-            <CustomIconButton edge="end" aria-label="play or pause">
+            <VideoControlButton edge="end" aria-label="play or pause">
               {playbackState === 'playing' 
                 ? <PauseIcon fontSize="large"/> 
                 : <PlayArrowIcon fontSize="large"/>}
-            </CustomIconButton>
+            </VideoControlButton>
 
-            <CustomIconButton edge="end" aria-label="volume">
-              {(volumeLevel <= 0) 
-                ? <VolumeOffIcon />
-                : (volumeLevel >= 50) 
-                  ? <VolumeUpIcon />
-                  : <VolumeDownIcon />
-              }
-            </CustomIconButton>
-
-            <Slider
-              classes={{ 
-                root: classes.volumeSliderRoot,
-                track: classes.volumeSliderTrack,
-                rail: classes.volumeSliderRail,
-                thumb: classes.volumeSliderThumb,
-              }}
-              min={0}
-              step={1}
-              max={100}
-              color="secondary"
-              // onChange={handleChange}
-              valueLabelDisplay="off"
-              aria-label="volume-slider"
-              value={volumeLevel} 
+            <VolumeControl
+              volumeLevel={volumeLevel}
             />
 
             <div className={classes.textWrapper}>
@@ -245,16 +118,14 @@ const VideoControls = ({
           </div>
 
           <div className={classes.controlGroup}>
-            <CustomIconButton edge="end" aria-label="settings">
-              <SettingsIcon />
-            </CustomIconButton>
+            <SettingsControl />
             
-            <CustomIconButton aria-label="full-screen">
+            <VideoControlButton aria-label="full-screen">
               {fullscreenEnabled 
                 ? <FullscreenExitIcon fontSize="large"/> 
                 : <FullscreenIcon fontSize="large"/>
               }
-            </CustomIconButton>
+            </VideoControlButton>
           </div>
         </div>
       </div>
