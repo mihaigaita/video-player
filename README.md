@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# HTML5 Custom Video Player
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 It is a simple Video Player with custom controls, HTML5 controls are disabled.
