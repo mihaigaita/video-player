@@ -1,10 +1,9 @@
-import { useContext } from 'react';
+import { useContext, useCallback, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
+import clsx from 'clsx';
 
 import Typography from '@material-ui/core/Typography';
-import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
-import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
@@ -14,24 +13,12 @@ import VideoControlButton from './VideoControlButton';
 import VideoProgress from './VideoProgress';
 import VolumeControl from './VolumeControl';
 import SettingsControl from './SettingsControl';
+import VideoClickFeedback from './VideoClickFeedback';
 import { formatSecondsToTimeDuration } from '../utils/functions';
 import { VideoPlayerContext } from './VideoPlayer';
 
 
 const useVideoStyles = makeStyles((theme) => ({
-  actionFeedbackWrapper: {
-    fontSize: '4rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    zIndex: 1,
-    top: 0,
-    left: 0,
-    background: '#00000050',
-  },
   controlsRoot: {
     height: '100%',
     width: '100%',
@@ -56,6 +43,20 @@ const useVideoStyles = makeStyles((theme) => ({
     left: 0,
     padding: theme.spacing(0, 2),
   },
+  controlsAndProgressActive: {
+    opacity: 1,
+  },
+  controlsAndProgressIdle: {
+    transition: 'all 0.2s linear',
+    opacity: 0,
+  },
+  cursorOn: {
+    cursor: 'auto',
+  },
+  cursorOff: {
+    transition: 'all 0.2s linear',
+    cursor: 'none',
+  },
   controlGroup: {
     display: 'flex',
     alignItems: 'center',
@@ -73,24 +74,44 @@ const useVideoStyles = makeStyles((theme) => ({
 const VideoControls = observer(() => {
   const classes = useVideoStyles();
   const videoStore = useContext(VideoPlayerContext);
+  const pendingControlHideHandler = useRef(null);
 
-  const FeedbackIconType = (videoStore.playbackState === 'playing')
-    ? PlayCircleFilledIcon 
-    : PauseCircleFilledIcon;
+  const activateControlsHandler = useCallback(() => {
+    // Cancel any existing scheduled hiding of video controls
+    pendingControlHideHandler?.current?.cancel();
+
+    const pendingHideHandle = videoStore.setUserAsActive.call(videoStore);
+    pendingHideHandle.catch(() => null);
+    pendingControlHideHandler.current = pendingHideHandle;
+  }, [videoStore, pendingControlHideHandler]);
+
+  const hideControlsHandler = useCallback(() => {
+    // Cancel any existing scheduled hiding of video controls
+    pendingControlHideHandler?.current?.cancel();
+
+    videoStore.setUserAsIdle();
+  }, [videoStore, pendingControlHideHandler]);
 
   return (
-    <div className={classes.controlsRoot}>
-      <div 
-        className={classes.actionFeedbackWrapper}
-        onClick={videoStore.handleVideoClick}
-      >
-        <FeedbackIconType 
-          color="secondary"
-          fontSize="inherit"
-        />
-      </div>
+    <div 
+      onMouseLeave={hideControlsHandler}
+      onMouseEnter={activateControlsHandler}
+      onClick={activateControlsHandler}
+      onMouseMove={activateControlsHandler}
+      onTouchMove={activateControlsHandler}
+      onTouchStart={activateControlsHandler}
+      className={clsx(
+        classes.controlsRoot,
+        videoStore.userIsIdle ? classes.cursorOff : classes.cursorOn
+      )}
+    >
+      <VideoClickFeedback />
 
-      <div className={classes.controlsAndProgress}>
+      <div className={clsx(
+          classes.controlsAndProgress,
+          videoStore.userIsIdle ? classes.controlsAndProgressIdle : classes.controlsAndProgressActive
+        )}
+      >
         <VideoProgress />
 
         <div className={classes.buttons}>
@@ -100,7 +121,7 @@ const VideoControls = observer(() => {
               edge="end" 
               aria-label="play or pause"
             >
-              {videoStore.playbackState === 'playing' 
+              {(videoStore.videoIsPlaying)
                 ? <PauseIcon fontSize="large"/> 
                 : <PlayArrowIcon fontSize="large"/>}
             </VideoControlButton>

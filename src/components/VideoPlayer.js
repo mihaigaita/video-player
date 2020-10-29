@@ -1,4 +1,4 @@
-import { createContext, useCallback } from "react"
+import { createContext, useRef, useEffect } from "react"
 import { makeStyles } from '@material-ui/core/styles';
 
 import VideoControls from './VideoControls';
@@ -26,18 +26,21 @@ const Video = ({
   const classes = useStyles();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const videoStore = new VideoStore();
+  const videoElementRef = useRef();
 
-  const getVideoComponentRef = useCallback(node => {
-    if (node) {
-      videoStore.setVideoElement(node);
+  useEffect(() => {
+    if (videoElementRef.current) {
+      videoStore.setVideoElement(videoElementRef.current);
     }
+
+    return videoStore.cleanUp;
   }, [videoStore]);
 
   return (
     <div className={classes.videoContainer}>
       <video
         id="video"
-        ref={getVideoComponentRef}
+        ref={videoElementRef}
         className={classes.video}
         preload="metadata" 
         poster={posterUrl}

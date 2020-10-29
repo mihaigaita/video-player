@@ -1,4 +1,5 @@
-import { makeAutoObservable, configure } from "mobx";
+import { makeAutoObservable, configure } from 'mobx';
+import { delayMsAsync } from '../utils/functions';
 
 configure({
   enforceActions: "always",
@@ -9,17 +10,20 @@ configure({
 });
 
 class VideoStore {
-  playbackState = 'paused';
+  videoIsPlaying = false;
   volumeLevel = 50;
   currentPositionSeconds = 0;
   durationSeconds = 0;
   fullscreenEnabled = false;
   videoElement = null;
+  videoClickAnimationDisplaying = false;
+  userIsIdle = false;
 
   constructor() {
     makeAutoObservable(this, {
       videoElement: false,
       setVideoElement: false,
+      cleanUp: false,
     });
   }
 
@@ -29,9 +33,21 @@ class VideoStore {
     videoElement.addEventListener('timeupdate', this.updateTime);
     videoElement.addEventListener('ended', this.handleEnd);
   };
+  
+  cleanUp = () => {
+    this.videoElement.removeEventListener('loadedmetadata', this.updateDuration);
+    this.videoElement.removeEventListener('timeupdate', this.updateTime);
+    this.videoElement.removeEventListener('ended', this.handleEnd);
+  };
+
+  setUserAsIdle = () => {
+    if (this.videoIsPlaying) {
+      this.userIsIdle = true;
+    }
+  };
 
   handleEnd = () => {
-    this.playbackState = 'paused';
+    this.videoIsPlaying = false;
   };
 
   updateTime = () => {
@@ -45,10 +61,6 @@ class VideoStore {
     this.currentPositionSeconds = this.videoElement.currentTime;
   };
 
-  handleVideoClick = () => {
-    this.handlePlayPause();
-  };
-
   updateDuration = () => {
     if (!this.videoElement) return;
 
@@ -60,10 +72,10 @@ class VideoStore {
 
     if (this.videoElement.paused || this.videoElement.ended) {
       this.videoElement.play();
-      this.playbackState = 'playing';
+      this.videoIsPlaying = true;
     } else {
       this.videoElement.pause();
-      this.playbackState = 'paused';
+      this.videoIsPlaying = false;
     }
   }
 
@@ -72,6 +84,23 @@ class VideoStore {
 
     this.videoElement.currentTime = newPosition;
   }
+
+  *handleVideoClick() {
+    this.handlePlayPause();
+    this.videoClickAnimationDisplaying = true;
+    
+    yield delayMsAsync(0);
+
+    this.videoClickAnimationDisplaying = false;
+  };
+
+  *setUserAsActive() {
+    this.userIsIdle = false;
+
+    yield delayMsAsync(4000);
+
+    this.setUserAsIdle();
+  };
 }
 
 export default VideoStore;

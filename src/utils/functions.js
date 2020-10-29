@@ -9,6 +9,9 @@ const formatSecondsToTimeDuration = (value) => {
   return `${hoursText}${minutesSecondsText}`;
 };
 
+const delayMsAsync = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export {
   formatSecondsToTimeDuration,
-}
+  delayMsAsync,
+};
