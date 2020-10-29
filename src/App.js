@@ -1,5 +1,6 @@
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import Video from './components/Video';
 
 const useStyles = makeStyles((theme) => ({
   topContainer: {
@@ -9,10 +10,10 @@ const useStyles = makeStyles((theme) => ({
   videoContainer: {
     margin: theme.spacing(15, 'auto'),
   },
-  video: {
-    display: 'block',
-    objectFit: 'contain',
-  }
+  title: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
 }));
 
 const App = () => {
@@ -21,22 +22,23 @@ const App = () => {
   return (
     <div className={classes.topContainer}>
       <div className={classes.videoContainer}>
-        <video
-          id="video"
-          className={classes.video}
-          controls 
-          preload="metadata" 
-          poster={process.env.PUBLIC_URL + "/globe_preview_640x360.jpg"}
-          height="360"
-        >
-          <source src={process.env.PUBLIC_URL + "/globe_640x360.mp4"} type="video/mp4" />
-          <source src={process.env.PUBLIC_URL + "/globe_640x360.webm"} type="video/webm" />
-
-          <a href={process.env.PUBLIC_URL + "/globe_640x360.mp4"}>Download MP4 (3MB)</a>
-        </video>
-        <Typography variant="h4" gutterBottom>
-          Pale Blue Marble
-        </Typography>
+        <Video 
+          posterUrl={process.env.PUBLIC_URL + "/preview/globe_preview_640x360.jpg"}
+          manualDownloadUrl={process.env.PUBLIC_URL + "/video/globe_640x360.mp4"}
+          sourceList={[{
+              url: process.env.PUBLIC_URL + "/video/globe_640x360.webm",
+              type: "video/webm",
+            }, {
+              url: process.env.PUBLIC_URL + "/video/globe_640x360.mp4",
+              type: "video/mp4",
+            }
+          ]}
+        />
+        <div className={classes.title}>
+          <Typography variant="h4" gutterBottom>
+            Pale Blue Marble
+          </Typography>
+        </div>
       </div>
     </div>
   );
