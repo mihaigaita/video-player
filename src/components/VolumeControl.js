@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Slider from '@material-ui/core/Slider';
@@ -6,6 +8,7 @@ import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 
 import VideoControlButton from './VideoControlButton';
+import { VideoPlayerContext } from './VideoPlayer';
 
 
 const useVolumeStyles = makeStyles((theme) => ({
@@ -33,17 +36,16 @@ const useVolumeStyles = makeStyles((theme) => ({
   }
 }));
 
-const VolumeControl = ({
-  volumeLevel,
-}) => {
+const VolumeControl = observer(() => {
   const classes = useVolumeStyles();
+  const videoStore = useContext(VideoPlayerContext);
 
   return (
     <div className={classes.wrapper}>
       <VideoControlButton edge="end" aria-label="volume">
-        {(volumeLevel <= 0) 
+        {(videoStore.volumeLevel <= 0) 
           ? <VolumeOffIcon />
-          : (volumeLevel >= 50) 
+          : (videoStore.volumeLevel >= 50) 
             ? <VolumeUpIcon />
             : <VolumeDownIcon />
         }
@@ -58,10 +60,10 @@ const VolumeControl = ({
         // onChange={handleChange}
         valueLabelDisplay="off"
         aria-label="volume-slider"
-        value={volumeLevel} 
+        value={videoStore.volumeLevel} 
       />
     </div>
   );
-};
+});
 
 export default VolumeControl;

@@ -1,4 +1,6 @@
+import { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { observer } from 'mobx-react';
 
 import Typography from '@material-ui/core/Typography';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
@@ -13,6 +15,7 @@ import VideoProgress from './VideoProgress';
 import VolumeControl from './VolumeControl';
 import SettingsControl from './SettingsControl';
 import { formatSecondsToTimeDuration } from '../utils/functions';
+import { VideoPlayerContext } from './VideoPlayer';
 
 
 const useVideoStyles = makeStyles((theme) => ({
@@ -67,15 +70,11 @@ const useVideoStyles = makeStyles((theme) => ({
   },
 }));
 
-const VideoControls = ({
-  playbackState = 'paused',
-  volumeLevel = 50,
-  currentPositionSeconds = 0,
-  durationSeconds = 0,
-  fullscreenEnabled = false,
-}) => {
+const VideoControls = observer(() => {
   const classes = useVideoStyles();
-  const FeedbackIconType = playbackState === 'playing' ? PlayCircleFilledIcon : PauseCircleFilledIcon;
+  const videoStore = useContext(VideoPlayerContext);
+
+  const FeedbackIconType = videoStore.playbackState === 'playing' ? PlayCircleFilledIcon : PauseCircleFilledIcon;
 
   return (
     <div className={classes.controlsRoot}>
@@ -87,22 +86,17 @@ const VideoControls = ({
       </div>
 
       <div className={classes.controlsAndProgress}>
-        <VideoProgress
-          durationSeconds={durationSeconds}
-          currentPositionSeconds={currentPositionSeconds}
-        />
+        <VideoProgress />
 
         <div className={classes.buttons}>
           <div className={classes.controlGroup}>
             <VideoControlButton edge="end" aria-label="play or pause">
-              {playbackState === 'playing' 
+              {videoStore.playbackState === 'playing' 
                 ? <PauseIcon fontSize="large"/> 
                 : <PlayArrowIcon fontSize="large"/>}
             </VideoControlButton>
 
-            <VolumeControl
-              volumeLevel={volumeLevel}
-            />
+            <VolumeControl />
 
             <div className={classes.textWrapper}>
               <Typography
@@ -112,7 +106,8 @@ const VideoControls = ({
                 variant="body2" 
                 color="secondary"
               >
-                {`${formatSecondsToTimeDuration(currentPositionSeconds)} / ${formatSecondsToTimeDuration(durationSeconds)}`}
+                {`${formatSecondsToTimeDuration(videoStore.currentPositionSeconds)} 
+                  / ${formatSecondsToTimeDuration(videoStore.durationSeconds)}`}
               </Typography>
             </div>
           </div>
@@ -121,7 +116,7 @@ const VideoControls = ({
             <SettingsControl />
             
             <VideoControlButton aria-label="full-screen">
-              {fullscreenEnabled 
+              {videoStore.fullscreenEnabled 
                 ? <FullscreenExitIcon fontSize="large"/> 
                 : <FullscreenIcon fontSize="large"/>
               }
@@ -131,6 +126,6 @@ const VideoControls = ({
       </div>
     </div>
   );
-};
+});
 
 export default VideoControls;
