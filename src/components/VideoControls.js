@@ -3,18 +3,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
 import clsx from 'clsx';
 
-import Typography from '@material-ui/core/Typography';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import PauseIcon from '@material-ui/icons/Pause';
-import FullscreenIcon from '@material-ui/icons/Fullscreen';
-import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
-
-import VideoControlButton from './VideoControlButton';
 import VideoProgress from './VideoProgress';
 import VolumeControl from './VolumeControl';
 import SettingsControl from './SettingsControl';
+import FullscreenControl from './FullscreenControl';
+import PlaybackControl from './PlaybackControl';
 import VideoClickFeedback from './VideoClickFeedback';
-import { formatSecondsToTimeDuration } from '../utils/functions';
+import ElapsedTime from './ElapsedTime';
 import { VideoPlayerContext } from './VideoPlayer';
 
 
@@ -61,14 +56,6 @@ const useVideoStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
   }, 
-  textWrapper: {
-    paddingTop: theme.spacing(1),
-    display: 'flex',
-    alignItems: 'center',
-  },
-  textRoot: {
-    lineHeight: '100%',
-  },
 }));
 
 const VideoControls = observer(() => {
@@ -116,41 +103,14 @@ const VideoControls = observer(() => {
 
         <div className={classes.buttons}>
           <div className={classes.controlGroup}>
-            <VideoControlButton 
-              onClick={videoStore.handlePlayPause} 
-              edge="end" 
-              aria-label="play or pause"
-            >
-              {(videoStore.videoIsPlaying)
-                ? <PauseIcon fontSize="large"/> 
-                : <PlayArrowIcon fontSize="large"/>}
-            </VideoControlButton>
-
+            <PlaybackControl />
             <VolumeControl />
-
-            <div className={classes.textWrapper}>
-              <Typography
-                classes={{ root: classes.textRoot }}
-                align="center" 
-                edge="end" 
-                variant="body2" 
-                color="secondary"
-              >
-                {`${formatSecondsToTimeDuration(videoStore.currentPositionSeconds)} 
-                  / ${formatSecondsToTimeDuration(videoStore.durationSeconds)}`}
-              </Typography>
-            </div>
+            <ElapsedTime />
           </div>
 
           <div className={classes.controlGroup}>
             <SettingsControl />
-            
-            <VideoControlButton aria-label="full-screen">
-              {videoStore.fullscreenEnabled 
-                ? <FullscreenExitIcon fontSize="large"/> 
-                : <FullscreenIcon fontSize="large"/>
-              }
-            </VideoControlButton>
+            <FullscreenControl />
           </div>
         </div>
       </div>
