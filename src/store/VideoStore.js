@@ -1,4 +1,5 @@
 import { makeAutoObservable, configure } from 'mobx';
+import fscreen from 'fscreen';
 import { delayMsAsync } from '../utils/functions';
 
 configure({
@@ -14,14 +15,16 @@ class VideoStore {
   volumeLevel = 50;
   currentPositionSeconds = 0;
   durationSeconds = 0;
-  fullscreenEnabled = false;
+  fullscreenIsActive = false;
   videoElement = null;
+  videoContainer = null;
   videoClickAnimationDisplaying = false;
   userIsIdle = false;
 
   constructor() {
     makeAutoObservable(this, {
       videoElement: false,
+      videoContainer: false,
       setVideoElement: false,
       cleanUp: false,
     });
@@ -32,6 +35,10 @@ class VideoStore {
     videoElement.addEventListener('loadedmetadata', this.updateDuration);
     videoElement.addEventListener('timeupdate', this.updateTime);
     videoElement.addEventListener('ended', this.handleEnd);
+  };
+
+  setVideoContainer = (videoContainer) => {
+    this.videoContainer = videoContainer;
   };
   
   cleanUp = () => {
@@ -77,13 +84,25 @@ class VideoStore {
       this.videoElement.pause();
       this.videoIsPlaying = false;
     }
-  }
+  };
 
   handleSeek = (event, newPosition) => {
     if (!this.videoElement) return;
 
     this.videoElement.currentTime = newPosition;
-  }
+  };
+
+  handleFullscreen = () => {
+    if (fscreen.fullscreenEnabled && this.videoContainer) {
+      if (this.fullscreenIsActive && fscreen.fullscreenElement) {
+        fscreen.exitFullscreen();
+        this.fullscreenIsActive = false;
+      } else {
+        fscreen.requestFullscreen(this.videoContainer);
+        this.fullscreenIsActive = true;
+      }
+     }
+  };
 
   *handleVideoClick() {
     this.handlePlayPause();

@@ -1,4 +1,3 @@
-import fscreen from 'fscreen';
 import { useContext } from 'react';
 import { observer } from 'mobx-react';
 
@@ -13,8 +12,11 @@ const FullScreenControl = observer(() => {
   const videoStore = useContext(VideoPlayerContext);
 
   return (
-    <VideoControlButton aria-label="full-screen">
-      {videoStore.fullscreenEnabled 
+    <VideoControlButton 
+      onClick={videoStore.handleFullscreen}
+      aria-label="full-screen"
+    >
+      {videoStore.fullscreenIsActive 
         ? <FullscreenExitIcon fontSize="large"/> 
         : <FullscreenIcon fontSize="large"/>
       }

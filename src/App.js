@@ -10,6 +10,8 @@ const useStyles = makeStyles((theme) => ({
   },
   videoContainer: {
     margin: theme.spacing(15, 'auto'),
+    height: 360,
+    width: 640,
   },
   title: {
     display: 'flex',
