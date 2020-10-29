@@ -54,9 +54,9 @@ const VideoProgress = observer(() => {
       component="div"
       classes={classes}
       min={0}
-      step={1}
+      step={0.01}
       max={videoStore.durationSeconds}
-      // onChange={handleChange}
+      onChange={videoStore.handleSeek}
       valueLabelDisplay="auto"
       getAriaValueText={formatSecondsToTimeDuration}
       ValueLabelComponent={ValueLabelComponent}

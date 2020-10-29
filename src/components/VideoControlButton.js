@@ -12,7 +12,7 @@ const useControlStyles = makeStyles({
   }
 });
 
-const VideoControlButton = ({ children, ...otherProps }) => {
+const VideoControlButton = ({ children, onClick, ...otherProps }) => {
   const classes = useControlStyles();
 
   return (
@@ -20,6 +20,7 @@ const VideoControlButton = ({ children, ...otherProps }) => {
       classes={{ root: classes.iconRoot}} 
       disableFocusRipple 
       disableRipple
+      onClick={onClick}
       color="secondary"
     >
       {React.cloneElement(React.Children.only(children), otherProps)}

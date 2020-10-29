@@ -74,11 +74,16 @@ const VideoControls = observer(() => {
   const classes = useVideoStyles();
   const videoStore = useContext(VideoPlayerContext);
 
-  const FeedbackIconType = videoStore.playbackState === 'playing' ? PlayCircleFilledIcon : PauseCircleFilledIcon;
+  const FeedbackIconType = (videoStore.playbackState === 'playing')
+    ? PlayCircleFilledIcon 
+    : PauseCircleFilledIcon;
 
   return (
     <div className={classes.controlsRoot}>
-      <div className={classes.actionFeedbackWrapper}>
+      <div 
+        className={classes.actionFeedbackWrapper}
+        onClick={videoStore.handleVideoClick}
+      >
         <FeedbackIconType 
           color="secondary"
           fontSize="inherit"
@@ -90,7 +95,11 @@ const VideoControls = observer(() => {
 
         <div className={classes.buttons}>
           <div className={classes.controlGroup}>
-            <VideoControlButton edge="end" aria-label="play or pause">
+            <VideoControlButton 
+              onClick={videoStore.handlePlayPause} 
+              edge="end" 
+              aria-label="play or pause"
+            >
               {videoStore.playbackState === 'playing' 
                 ? <PauseIcon fontSize="large"/> 
                 : <PlayArrowIcon fontSize="large"/>}

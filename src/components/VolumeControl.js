@@ -11,7 +11,14 @@ import VideoControlButton from './VideoControlButton';
 import { VideoPlayerContext } from './VideoPlayer';
 
 
-const useVolumeStyles = makeStyles((theme) => ({
+const useVolumeStyles = makeStyles({
+  wrapper: {
+    display: 'flex',
+    alignItems: 'center',
+  }
+});
+
+const useSliderStyles = makeStyles((theme) => ({
   root: {
     display: 'inline-block',
     margin: theme.spacing(0, 2),
@@ -30,14 +37,11 @@ const useVolumeStyles = makeStyles((theme) => ({
       boxShadow: 'unset',
     }
   },
-  wrapper: {
-    display: 'flex',
-    alignItems: 'center',
-  }
 }));
 
 const VolumeControl = observer(() => {
   const classes = useVolumeStyles();
+  const sliderClasses = useSliderStyles();
   const videoStore = useContext(VideoPlayerContext);
 
   return (
@@ -52,7 +56,7 @@ const VolumeControl = observer(() => {
       </VideoControlButton>
 
       <Slider
-        classes={classes}
+        classes={sliderClasses}
         min={0}
         step={1}
         max={100}
