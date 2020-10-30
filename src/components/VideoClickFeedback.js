@@ -20,11 +20,13 @@ const useFeedbackStyles = makeStyles({
     zIndex: 1,
     top: 0,
     left: 0,
-    background: '#00000050',
+  },
+  backgroundMask: {
+    background: '#000a',
   },
   actionAnimationStart: {
     fontSize: "4rem",
-    opacity: 0.6,
+    opacity: 0.3,
   },
   actionRestState: {
     transition: 'all 0.5s ease-out',
@@ -45,13 +47,13 @@ const VideoClickFeedback = observer(() => {
     <div 
       className={clsx(
         classes.actionFeedbackWrapper, 
-        videoStore.videoClickAnimationDisplaying ? classes.actionAnimationStart : classes.actionRestState,
+        videoStore.seekIsPending && classes.backgroundMask
       )}
       onClick={videoStore.handleVideoClick.bind(videoStore)}
     >
-      <FeedbackIconType 
+      <FeedbackIconType
+        classes={{ root: videoStore.videoClickAnimationDisplaying ? classes.actionAnimationStart : classes.actionRestState }}
         color="secondary"
-        fontSize="inherit"
       />
     </div>
   );
