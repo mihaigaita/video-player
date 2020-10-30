@@ -31,7 +31,7 @@ class VideoStore {
   setInitialState = () => {
     this.videoIsPlaying = false;
     this.volumeLevel = 1;
-    this.previousVolumeLevel = 1;
+    this.volumeIsMuted = false;
     this.currentPositionSeconds = 0;
     this.durationSeconds = 0;
     this.fullscreenIsActive = false;
@@ -167,16 +167,17 @@ class VideoStore {
   };
 
   handleVolumeChange = (event, newVolume) => {
+    if (!this.videoElement) return;
+
+    this.videoElement.volume = newVolume;
     this.volumeLevel = newVolume;
   };
 
   toggleVolume = () => {
-    if (this.volumeLevel > 0) {
-      this.previousVolumeLevel = this.volumeLevel;
-      this.volumeLevel = 0;
-    } else {
-      this.volumeLevel = this.previousVolumeLevel;
-    }
+    if (!this.videoElement) return;
+
+    this.volumeIsMuted = !this.volumeIsMuted;
+    this.videoElement.muted = this.volumeIsMuted;
   };
 
   *handleVideoClick() {
@@ -184,7 +185,6 @@ class VideoStore {
     this.videoClickAnimationDisplaying = true;
     
     yield delayMsAsync(0);
-
     this.videoClickAnimationDisplaying = false;
   };
 
