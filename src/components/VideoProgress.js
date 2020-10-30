@@ -26,6 +26,10 @@ const useProgressStyles = makeStyles((theme) => ({
   track: {
     height: 4,
   },
+  smoothTrack: {
+    height: 4,
+    transition: 'width 0.25s linear',
+  },
   rail: {
     height: 4,
     backgroundColor: 'gray',
@@ -51,12 +55,19 @@ const VideoProgress = observer(() => {
 
   return (
     <Slider
+      onChange={videoStore.handleSeek}
+      onChangeCommitted={videoStore.handleSeek}
       component="div"
-      classes={classes}
+      classes={{
+        root: classes.root,
+        thumb: classes.thumb,
+        active: classes.active,
+        track: videoStore.seekIsPending ? classes.track : classes.smoothTrack,
+        rail: classes.rail,
+      }}
       min={0}
       step={0.01}
       max={videoStore.durationSeconds}
-      onChange={videoStore.handleSeek}
       valueLabelDisplay="auto"
       getAriaValueText={formatSecondsToTimeDuration}
       ValueLabelComponent={ValueLabelComponent}

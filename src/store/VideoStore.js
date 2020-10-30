@@ -11,13 +11,6 @@ configure({
 });
 
 class VideoStore {
-  videoIsPlaying;
-  volumeLevel;
-  currentPositionSeconds;
-  durationSeconds;
-  fullscreenIsActive;
-  videoClickAnimationDisplaying;
-  userIsIdle;
   videoElement = null;
   videoContainer = null;
 
@@ -29,6 +22,7 @@ class VideoStore {
       videoContainer: false,
       setVideoElement: false,
       cleanUp: false,
+      videoWasPlayingBeforeSeek: false,
     });
   }
 
@@ -40,6 +34,8 @@ class VideoStore {
     this.fullscreenIsActive = false;
     this.videoClickAnimationDisplaying = false;
     this.userIsIdle = false;
+    this.seekIsPending = false;
+    this.videoWasPlayingBeforeSeek = false;
   };
 
   setVideoElement = (videoElement) => {
@@ -102,8 +98,29 @@ class VideoStore {
   };
 
   handleSeek = (event, newPosition) => {
-    if (!this.videoElement) return;
+    if (!this.videoElement || !['mousedown', 'mouseup', 'mousemove'].includes(event.type)) return;
 
+    const isMouseDown = (event.type === 'mousedown');
+    const isMouseUp = (event.type === 'mouseup');
+
+    if (isMouseDown) {
+      if (this.videoIsPlaying) {
+        this.videoElement.pause();
+        this.videoIsPlaying = false;
+        this.videoWasPlayingBeforeSeek = true;
+      } else {
+        this.videoWasPlayingBeforeSeek = false;
+      }
+      this.seekIsPending = true;
+    } else if (isMouseUp) {
+      if (this.videoWasPlayingBeforeSeek) {
+        this.videoElement.play();
+        this.videoIsPlaying = true;
+      }
+      this.seekIsPending = false;
+    }
+
+    // Update position on mouse down, up and move events
     this.videoElement.currentTime = newPosition;
   };
 
