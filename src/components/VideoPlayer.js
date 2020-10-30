@@ -1,4 +1,4 @@
-import { createContext, useRef, useEffect } from "react"
+import { createContext, useRef, useEffect, useState } from "react"
 import { makeStyles } from '@material-ui/core/styles';
 
 import VideoControls from './VideoControls';
@@ -24,19 +24,28 @@ const Video = ({
   sourceList = [],
 }) => {
   const classes = useStyles();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const videoStore = new VideoStore(); // We want a new store instance for every different video source
   const videoElementRef = useRef();
   const videoContainerRef = useRef();
+
+  // Lazy initialization of a single videoStore instance per mounted component
+  const [videoStore] = useState(() => new VideoStore());
 
   useEffect(() => {
     if (videoElementRef.current) {
       videoStore.setVideoElement(videoElementRef.current);
+    }
+
+    if (videoContainerRef.current) {
       videoStore.setVideoContainer(videoContainerRef.current);
     }
 
     return videoStore.cleanUp;
   }, [videoStore]);
+
+  // Reset store state if the video content changes
+  useEffect(() => {
+    videoStore.setInitialState();
+  }, [sourceList, videoStore]);
 
   return (
     <div 

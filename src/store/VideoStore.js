@@ -11,17 +11,19 @@ configure({
 });
 
 class VideoStore {
-  videoIsPlaying = false;
-  volumeLevel = 50;
-  currentPositionSeconds = 0;
-  durationSeconds = 0;
-  fullscreenIsActive = false;
+  videoIsPlaying;
+  volumeLevel;
+  currentPositionSeconds;
+  durationSeconds;
+  fullscreenIsActive;
+  videoClickAnimationDisplaying;
+  userIsIdle;
   videoElement = null;
   videoContainer = null;
-  videoClickAnimationDisplaying = false;
-  userIsIdle = false;
 
   constructor() {
+    this.setInitialState();
+
     makeAutoObservable(this, {
       videoElement: false,
       videoContainer: false,
@@ -29,6 +31,16 @@ class VideoStore {
       cleanUp: false,
     });
   }
+
+  setInitialState = () => {
+    this.videoIsPlaying = false;
+    this.volumeLevel = 50;
+    this.currentPositionSeconds = 0;
+    this.durationSeconds = 0;
+    this.fullscreenIsActive = false;
+    this.videoClickAnimationDisplaying = false;
+    this.userIsIdle = false;
+  };
 
   setVideoElement = (videoElement) => {
     this.videoElement = videoElement;
@@ -45,6 +57,9 @@ class VideoStore {
     this.videoElement.removeEventListener('loadedmetadata', this.updateDuration);
     this.videoElement.removeEventListener('timeupdate', this.updateTime);
     this.videoElement.removeEventListener('ended', this.handleEnd);
+
+    this.videoElement = null;
+    this.videoContainer = null;
   };
 
   setUserAsIdle = () => {
