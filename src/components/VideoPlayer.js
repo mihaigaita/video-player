@@ -7,6 +7,7 @@ import VideoStore from '../store/VideoStore';
 const useStyles = makeStyles({
   videoContainer: {
     position: 'relative',
+    border: '2px solid #555',
   },
   video: {
     display: 'block',

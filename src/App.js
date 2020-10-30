@@ -27,13 +27,10 @@ const App = () => {
     <div className={classes.topContainer}>
       <div className={classes.videoContainer}>
         <VideoPlayer 
-          posterUrl={process.env.PUBLIC_URL + "/preview/globe_preview_640x360.jpg"}
-          manualDownloadUrl={process.env.PUBLIC_URL + "/video/globe_640x360.mp4"}
+          posterUrl={process.env.PUBLIC_URL + "/preview/video.jpg"}
+          manualDownloadUrl={process.env.PUBLIC_URL + "/video/video.mp4"}
           sourceList={[{
-              url: process.env.PUBLIC_URL + "/video/globe_640x360.webm",
-              type: "video/webm",
-            }, {
-              url: process.env.PUBLIC_URL + "/video/globe_640x360.mp4",
+              url: process.env.PUBLIC_URL + "/video/video.mp4",
               type: "video/mp4",
             }
           ]}
@@ -41,7 +38,7 @@ const App = () => {
 
         <div className={classes.title}>
           <Typography variant="h4" gutterBottom>
-            Pale Blue Marble
+            Big Buck Bunny
           </Typography>
         </div>
       </div>

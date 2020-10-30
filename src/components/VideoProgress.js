@@ -59,7 +59,7 @@ const useProgressStyles = makeStyles({
     height: previewEnabled ? 5 : 3,
     marginTop: previewEnabled ? -2.5 : -1.5,
     backgroundColor: 'gray',
-    opacity: 0.2,
+    opacity: 0.4,
   }),
 });
 

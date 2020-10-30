@@ -6,7 +6,6 @@ import VideoControlButton from './VideoControlButton';
 import { VideoPlayerContext } from './VideoPlayer';
 
 const SettingsControl = observer(() => {
-  // eslint-disable-next-line no-unused-vars
   const videoStore = useContext(VideoPlayerContext);
 
   return (
