@@ -46,7 +46,8 @@ const useProgressStyles = makeStyles({
   },
   active: { },
   smoothMove: {
-    transition: 'width 0.25s linear',
+    transition: 'all 0.25s linear',
+    transitionProperty: 'width, left',
   },
   track: ({ previewEnabled }) => ({
     top: '50%',
