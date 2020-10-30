@@ -1,80 +1,106 @@
 import { useContext } from 'react';
+import clsx from 'clsx';
 import { observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Slider from '@material-ui/core/Slider';
-import Tooltip from '@material-ui/core/Tooltip';
 
 import { formatSecondsToTimeDuration } from '../utils/functions';
 import { VideoPlayerContext } from './VideoPlayer';
+import TimePreview from './TimePreview';
 
-const useProgressStyles = makeStyles((theme) => ({
+const useProgressStyles = makeStyles({
+  top: {
+    marginLeft: ({ marginX }) => marginX,
+    marginRight: ({ marginX }) => marginX,
+  },
+  progressContainer: {
+    position: 'relative',
+    height: 16,
+  },
+  seekPreview: {
+    top: '50%',
+    position: 'absolute',
+    height: ({ previewEnabled }) => previewEnabled ? 5 : 3,
+    marginTop: ({ previewEnabled }) => previewEnabled ? -2.5 : -1.5,
+    left: 0,
+    width: ({ seekTarget }) => `${seekTarget}%`,
+    zIndex: -1,
+    background: '#666',
+  },
   root: {
-    padding: theme.spacing(2, 0),
+    position: 'absolute',
+    top: 0,
+    padding: 0,
+    height: 16,
   },
   thumb: {
-    opacity: 0,
-    '&:hover, &$active': {
-      marginTop: -4,
-      opacity: 1,
-    },
+    top: '50%',
+    marginTop: -6,
     '&:focus, &:hover, &$active': {
       boxShadow: 'unset',
-    }
+    },
   },
-  active: {},
-  track: {
-    height: 4,
+  hide: {
+    opacity: 0,
   },
-  smoothTrack: {
-    height: 4,
+  active: { },
+  smoothMove: {
     transition: 'width 0.25s linear',
   },
-  rail: {
-    height: 4,
+  track: ({ previewEnabled }) => ({
+    top: '50%',
+    height: previewEnabled ? 5 : 3,
+    marginTop: previewEnabled ? -2.5 : -1.5,
+    pointerEvents: 'none',
+  }),
+  rail: ({ previewEnabled }) => ({
+    top: '50%',
+    height: previewEnabled ? 5 : 3,
+    marginTop: previewEnabled ? -2.5 : -1.5,
     backgroundColor: 'gray',
     opacity: 0.2,
-  },
-}));
-
-const ValueLabelComponent = ({
-  children,
-  open,
-  value
-}) => {
-  return (
-    <Tooltip open={open} enterTouchDelay={0} placement="top" title={value}>
-      {children}
-    </Tooltip>
-  );
-};
+  }),
+});
 
 const VideoProgress = observer(() => {
-  const classes = useProgressStyles();
   const videoStore = useContext(VideoPlayerContext);
+  const classes = useProgressStyles({ 
+    seekTarget: videoStore.seekHoverPositionPercent,
+    marginX: videoStore.progressMarginPixels,
+    previewEnabled: videoStore.previewPeekIsActive,
+  });
 
   return (
-    <Slider
-      onChange={videoStore.handleSeek}
-      onChangeCommitted={videoStore.handleSeek}
-      component="div"
-      classes={{
-        root: classes.root,
-        thumb: classes.thumb,
-        active: classes.active,
-        track: videoStore.seekIsPending ? classes.track : classes.smoothTrack,
-        rail: classes.rail,
-      }}
-      min={0}
-      step={0.01}
-      max={videoStore.durationSeconds}
-      valueLabelDisplay="auto"
-      getAriaValueText={formatSecondsToTimeDuration}
-      ValueLabelComponent={ValueLabelComponent}
-      valueLabelFormat={formatSecondsToTimeDuration}
-      aria-label="progress-slider"
-      value={videoStore.currentPositionSeconds}
-    />
+    <div className={classes.top}>
+      <TimePreview />
+      <div className={classes.progressContainer}>
+        <Slider
+          onMouseMove={videoStore.handlePreviewSeek}
+          onMouseLeave={videoStore.cancelPreviewSeek}
+          onMouseEnter={videoStore.startPreviewSeek}
+          onChange={videoStore.handleSeek}
+          onChangeCommitted={videoStore.handleSeek}
+          component="div"
+          classes={{
+            root: classes.root,
+            active: classes.active,
+            rail: classes.rail,
+            track: clsx(classes.track, !videoStore.seekIsPending && classes.smoothMove),
+            thumb: clsx(classes.thumb, classes.smoothMove, !videoStore.previewPeekIsActive && classes.hide),
+          }}
+          min={0}
+          step={0.01}
+          max={videoStore.durationSeconds}
+          valueLabelDisplay="off"
+          getAriaValueText={formatSecondsToTimeDuration}
+          aria-label="progress-slider"
+          value={videoStore.currentPositionSeconds}
+        />
+
+        <div className={classes.seekPreview} />
+      </div>
+    </div>
   );
 });
 

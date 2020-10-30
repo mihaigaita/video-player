@@ -13,6 +13,7 @@ configure({
 class VideoStore {
   videoElement = null;
   videoContainer = null;
+  progressMarginPixels = 16;
 
   constructor() {
     this.setInitialState();
@@ -23,6 +24,7 @@ class VideoStore {
       setVideoElement: false,
       cleanUp: false,
       videoWasPlayingBeforeSeek: false,
+      progressMarginPixels: false,
     });
   }
 
@@ -36,6 +38,8 @@ class VideoStore {
     this.userIsIdle = false;
     this.seekIsPending = false;
     this.videoWasPlayingBeforeSeek = false;
+    this.seekHoverPositionPercent = 0;
+    this.previewPeekIsActive = false;
   };
 
   setVideoElement = (videoElement) => {
@@ -95,6 +99,31 @@ class VideoStore {
       this.videoElement.pause();
       this.videoIsPlaying = false;
     }
+  };
+
+  handlePreviewSeek = (event) => {
+    if (!this.videoContainer || event.target.offsetWidth < 15) return;
+
+    const progressLeftOffset = this.videoContainer.offsetLeft + this.progressMarginPixels;
+    this.seekHoverPositionPercent = (event.pageX - progressLeftOffset) * 100 / event.target.offsetWidth;
+  };
+
+  get seekHoverPositionSeconds() {
+    return this.seekHoverPositionPercent * this.durationSeconds / 100;
+  }
+
+  get seekHoverPositionPercentClamped() {
+    return Math.max(5, Math.min(this.seekHoverPositionPercent, 95));
+  }
+
+  startPreviewSeek = (event) => {
+    this.handlePreviewSeek(event);
+    this.previewPeekIsActive = true;
+  };
+
+  cancelPreviewSeek = () => {
+    this.seekHoverPositionPercent = 0;
+    this.previewPeekIsActive = false;
   };
 
   handleSeek = (event, newPosition) => {

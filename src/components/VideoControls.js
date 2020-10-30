@@ -27,6 +27,7 @@ const useVideoStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: theme.spacing(2),
+    padding: theme.spacing(0, 5),
   },
   controlsAndProgress: {
     display: 'flex',
@@ -36,7 +37,6 @@ const useVideoStyles = makeStyles((theme) => ({
     zIndex: 2,
     bottom: 0,
     left: 0,
-    padding: theme.spacing(0, 2),
   },
   controlsAndProgressActive: {
     opacity: 1,

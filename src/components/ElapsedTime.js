@@ -27,8 +27,6 @@ const ElapsedTime = observer(() => {
     <div className={classes.textWrapper}>
       <Typography
         classes={{ root: classes.textRoot }}
-        align="center" 
-        edge="end" 
         variant="body2" 
         color="secondary"
       >
