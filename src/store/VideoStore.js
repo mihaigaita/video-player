@@ -30,7 +30,8 @@ class VideoStore {
 
   setInitialState = () => {
     this.videoIsPlaying = false;
-    this.volumeLevel = 50;
+    this.volumeLevel = 1;
+    this.previousVolumeLevel = 1;
     this.currentPositionSeconds = 0;
     this.durationSeconds = 0;
     this.fullscreenIsActive = false;
@@ -163,6 +164,19 @@ class VideoStore {
         this.fullscreenIsActive = true;
       }
      }
+  };
+
+  handleVolumeChange = (event, newVolume) => {
+    this.volumeLevel = newVolume;
+  };
+
+  toggleVolume = () => {
+    if (this.volumeLevel > 0) {
+      this.previousVolumeLevel = this.volumeLevel;
+      this.volumeLevel = 0;
+    } else {
+      this.volumeLevel = this.previousVolumeLevel;
+    }
   };
 
   *handleVideoClick() {

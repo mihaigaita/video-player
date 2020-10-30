@@ -11,17 +11,18 @@ import VideoControlButton from './VideoControlButton';
 import { VideoPlayerContext } from './VideoPlayer';
 
 
-const useVolumeStyles = makeStyles({
+const useVolumeStyles = makeStyles((theme) => ({
   wrapper: {
     display: 'flex',
     alignItems: 'center',
+    margin: theme.spacing(0, 2),
   }
-});
+}));
 
 const useSliderStyles = makeStyles((theme) => ({
   root: {
     display: 'inline-block',
-    margin: theme.spacing(0, 2),
+    margin: theme.spacing(0, 2, 0, 4),
     width: 60,
   },
   track: {
@@ -46,10 +47,14 @@ const VolumeControl = observer(() => {
 
   return (
     <div className={classes.wrapper}>
-      <VideoControlButton edge="end" aria-label="volume">
+      <VideoControlButton 
+        edge="end" 
+        aria-label="volume"
+        onClick={videoStore.toggleVolume}
+      >
         {(videoStore.volumeLevel <= 0) 
           ? <VolumeOffIcon />
-          : (videoStore.volumeLevel >= 50) 
+          : (videoStore.volumeLevel >= 0.5) 
             ? <VolumeUpIcon />
             : <VolumeDownIcon />
         }
@@ -58,10 +63,10 @@ const VolumeControl = observer(() => {
       <Slider
         classes={sliderClasses}
         min={0}
-        step={1}
-        max={100}
+        step={0.01}
+        max={1}
         color="secondary"
-        // onChange={handleChange}
+        onChange={videoStore.handleVolumeChange}
         valueLabelDisplay="off"
         aria-label="volume-slider"
         value={videoStore.volumeLevel} 
