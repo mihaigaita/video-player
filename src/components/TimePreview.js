@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { observer } from 'mobx-react';
-import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 import Typography from '@material-ui/core/Typography';
 
@@ -10,7 +10,8 @@ import { VideoPlayerContext } from './VideoPlayer';
 const usePreviewStyles = makeStyles(theme => ({
   timePreview: {
     display: 'inline-block',
-    position: 'relative',
+    position: 'absolute',
+    top: '-1.3rem',
     left: ({ seekTarget }) => `calc(${seekTarget}% - 18px)`,
     opacity: ({ previewEnabled }) => previewEnabled ? 1 : 0,
     background: 'radial-gradient(#0003, transparent)',

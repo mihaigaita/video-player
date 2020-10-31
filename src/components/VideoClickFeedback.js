@@ -49,7 +49,6 @@ const VideoClickFeedback = observer(() => {
         classes.actionFeedbackWrapper, 
         videoStore.seekIsPending && classes.backgroundMask
       )}
-      onClick={videoStore.handleVideoClick.bind(videoStore)}
     >
       <FeedbackIconType
         classes={{ root: videoStore.videoClickAnimationDisplaying ? classes.actionAnimationStart : classes.actionRestState }}

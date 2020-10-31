@@ -159,9 +159,11 @@ class VideoStore {
       if (this.fullscreenIsActive && fscreen.fullscreenElement) {
         fscreen.exitFullscreen();
         this.fullscreenIsActive = false;
+        document.documentElement.style.fontSize = "100%";
       } else {
         fscreen.requestFullscreen(this.videoContainer);
         this.fullscreenIsActive = true;
+        document.documentElement.style.fontSize = "150%";
       }
      }
   };
@@ -175,9 +177,14 @@ class VideoStore {
 
   toggleVolume = () => {
     if (!this.videoElement) return;
-
+    
     this.volumeIsMuted = !this.volumeIsMuted;
     this.videoElement.muted = this.volumeIsMuted;
+  };
+  
+  handlePlaybackSpeedChange = (speed) => {
+    if (!this.videoElement) return;
+    this.videoElement.playbackRate = speed;
   };
 
   *handleVideoClick() {

@@ -1,4 +1,4 @@
-import { useContext, useCallback, useRef } from 'react';
+import { useContext, useCallback, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
 import clsx from 'clsx';
@@ -29,15 +29,19 @@ const useVideoStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     padding: theme.spacing(0, 5),
   },
+  aboveControls: {
+    flexGrow: 1,
+  },
   controlsAndProgress: {
+    background: 'linear-gradient(0deg, #000a, transparent)',
+  },
+  container: {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
-    position: 'absolute',
+    height: '100%',
+    position: 'relative',
     zIndex: 2,
-    bottom: 0,
-    left: 0,
-    background: 'linear-gradient(0deg, #000a, transparent)',
   },
   controlsAndProgressActive: {
     opacity: 1,
@@ -63,6 +67,7 @@ const VideoControls = observer(() => {
   const classes = useVideoStyles();
   const videoStore = useContext(VideoPlayerContext);
   const pendingControlHideHandler = useRef(null);
+  const [aboveControlsRef, setAboveControlsRef] = useState(null);
 
   const activateControlsHandler = useCallback(() => {
     // Cancel any existing scheduled hiding of video controls
@@ -96,22 +101,30 @@ const VideoControls = observer(() => {
       <VideoClickFeedback />
 
       <div className={clsx(
-          classes.controlsAndProgress,
-          videoStore.userIsIdle ? classes.controlsAndProgressIdle : classes.controlsAndProgressActive
+          classes.container,
+          videoStore.userIsIdle ? classes.controlsAndProgressIdle : classes.controlsAndProgressActive,
         )}
       >
-        <VideoProgress />
+        <div 
+          className={classes.aboveControls} 
+          ref={setAboveControlsRef}
+          onClick={videoStore.handleVideoClick.bind(videoStore)}
+        />
 
-        <div className={classes.buttons}>
-          <div className={classes.controlGroup}>
-            <PlaybackControl />
-            <VolumeControl />
-            <ElapsedTime />
-          </div>
+        <div className={classes.controlsAndProgress}>
+          <VideoProgress />
 
-          <div className={classes.controlGroup}>
-            <SettingsControl />
-            <FullscreenControl />
+          <div className={classes.buttons}>
+            <div className={classes.controlGroup}>
+              <PlaybackControl />
+              <VolumeControl />
+              <ElapsedTime />
+            </div>
+
+            <div className={classes.controlGroup}>
+              <SettingsControl aboveControlsRef={aboveControlsRef} />
+              <FullscreenControl />
+            </div>
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ import TimePreview from './TimePreview';
 
 const useProgressStyles = makeStyles({
   top: {
+    position: 'relative',
     marginLeft: ({ marginX }) => marginX,
     marginRight: ({ marginX }) => marginX,
   },
@@ -75,6 +76,7 @@ const VideoProgress = observer(() => {
   return (
     <div className={classes.top}>
       <TimePreview />
+      
       <div className={classes.progressContainer}>
         <Slider
           onMouseMove={videoStore.handlePreviewSeek}
@@ -87,8 +89,15 @@ const VideoProgress = observer(() => {
             root: classes.root,
             active: classes.active,
             rail: classes.rail,
-            track: clsx(classes.track, !videoStore.seekIsPending && classes.smoothMove),
-            thumb: clsx(classes.thumb, classes.smoothMove, !videoStore.previewPeekIsActive && classes.hide),
+            track: clsx(
+              classes.track, 
+              !videoStore.seekIsPending && classes.smoothMove,
+            ),
+            thumb: clsx(
+              classes.thumb, 
+              !videoStore.seekIsPending && classes.smoothMove, 
+              !videoStore.previewPeekIsActive && classes.hide,
+            ),
           }}
           min={0}
           step={0.01}
