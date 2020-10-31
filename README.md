@@ -2,8 +2,11 @@
 
 Simple Video Player with custom controls, modeled after YouTube.
 
-![Alt text](screenshot.png?raw=true "Screenshot")
-[Demo of the player online](https://mihaigaita.github.io/video-player/build/index.html)
+Screenshot:
+
+![Screenshot](screenshot.png?raw=true)
+
+[Click here for a DEMO of the player online](https://mihaigaita.github.io/video-player/build/index.html)
 
 ## Implemented Features
 - Progress bar (with expected seek time preview on hover and ability to drag & hold)
