@@ -23,7 +23,6 @@ const useSliderStyles = makeStyles((theme) => ({
   root: {
     display: 'inline-block',
     margin: theme.spacing(0, 2, 0, 4),
-    width: 60,
   },
   track: {
     height: 4,
@@ -40,13 +39,30 @@ const useSliderStyles = makeStyles((theme) => ({
   },
 }));
 
+const useSliderContainerStyles = makeStyles({
+  container: {
+    width: ({ pointerIsHovering }) => pointerIsHovering ? 76 : 0,
+    display: 'flex',
+    alignItems: 'center',
+    transition: 'width .2s cubic-bezier(0.4, 0.0, 1, 1)',
+    overflow: 'hidden',
+  },
+});
+
 const VolumeControl = observer(() => {
-  const classes = useVolumeStyles();
-  const sliderClasses = useSliderStyles();
+  const volumeClasses = useVolumeStyles();
   const videoStore = useContext(VideoPlayerContext);
 
+  const sliderClasses = useSliderStyles();
+  const sliderContainerClasses = useSliderContainerStyles({ 
+    pointerIsHovering: videoStore.pointerIsHovering 
+  });
+
   return (
-    <div className={classes.wrapper}>
+    <div 
+      className={volumeClasses.wrapper}
+      onMouseEnter={videoStore.handleVolumeOnHover}
+    >
       <VideoControlButton 
         edge="end" 
         aria-label="volume"
@@ -60,17 +76,19 @@ const VolumeControl = observer(() => {
         }
       </VideoControlButton>
 
-      <Slider
-        classes={sliderClasses}
-        min={0}
-        step={0.01}
-        max={1}
-        color="secondary"
-        onChange={videoStore.handleVolumeChange}
-        valueLabelDisplay="off"
-        aria-label="volume-slider"
-        value={videoStore.volumeIsMuted ? 0 : videoStore.volumeLevel} 
-      />
+      <div className={sliderContainerClasses.container}>
+        <Slider
+          classes={sliderClasses}
+          min={0}
+          step={0.01}
+          max={1}
+          color="secondary"
+          onChange={videoStore.handleVolumeChange}
+          valueLabelDisplay="off"
+          aria-label="volume-slider"
+          value={videoStore.volumeIsMuted ? 0 : videoStore.volumeLevel} 
+        />
+      </div>
     </div>
   );
 });

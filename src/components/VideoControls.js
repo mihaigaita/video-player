@@ -115,7 +115,10 @@ const VideoControls = observer(() => {
           <VideoProgress />
 
           <div className={classes.buttons}>
-            <div className={classes.controlGroup}>
+            <div 
+              className={classes.controlGroup}
+              onMouseLeave={videoStore.handleVolumeOnHoverExit}
+            >
               <PlaybackControl />
               <VolumeControl />
               <ElapsedTime />

@@ -41,6 +41,7 @@ class VideoStore {
     this.videoWasPlayingBeforeSeek = false;
     this.seekHoverPositionPercent = 0;
     this.previewPeekIsActive = false;
+    this.pointerIsHovering = false;
   };
 
   setVideoElement = (videoElement) => {
@@ -165,11 +166,11 @@ class VideoStore {
         this.fullscreenIsActive = true;
         document.documentElement.style.fontSize = "150%";
       }
-     }
+    }
   };
 
   handleVolumeChange = (event, newVolume) => {
-    if (!this.videoElement) return;
+    if (!this.videoElement || newVolume < 0 || newVolume > 1 || !Number.isFinite(newVolume)) return;
 
     this.videoElement.volume = newVolume;
     this.volumeLevel = newVolume;
@@ -181,11 +182,19 @@ class VideoStore {
     this.volumeIsMuted = !this.volumeIsMuted;
     this.videoElement.muted = this.volumeIsMuted;
   };
-  
+ 
   handlePlaybackSpeedChange = (speed) => {
     if (!this.videoElement) return;
     this.videoElement.playbackRate = speed;
   };
+
+  handleVolumeOnHover = () => {
+    this.pointerIsHovering = true;
+  }
+
+  handleVolumeOnHoverExit = () => {
+    this.pointerIsHovering = false;
+  }
 
   *handleVideoClick() {
     this.handlePlayPause();

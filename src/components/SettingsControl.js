@@ -1,4 +1,4 @@
-import { useCallback, useContext, useRef, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import {
   usePopupState,
@@ -19,7 +19,7 @@ import { VideoPlayerContext } from './VideoPlayer';
 const useStyles = makeStyles(theme => ({
   menuPaper: {
     maxHeight: ({ maxHeight }) => maxHeight,
-    backgroundColor: '#0009',
+    backgroundColor: '#000d',
     '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
       color: theme.palette.common.white,
     },
