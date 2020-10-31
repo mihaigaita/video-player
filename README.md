@@ -1,9 +1,36 @@
 # HTML5 Custom Video Player
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-It is a simple Video Player with custom controls, HTML5 controls are disabled.
+Simple Video Player with custom controls, modeled after YouTube.
 
 ![Alt text](screenshot.png?raw=true "Screenshot")
+[Demo of the player online](https://mihaigaita.github.io/video-player/build/index.html)
+
+## Implemented Features
+- Progress bar (with expected seek time preview on hover and ability to drag & hold)
+- Play / Pause Button
+- Mute / Un-mute Sound Button (with Slider)
+- Settings Button (used to change playback speed)
+- Full Screen Button
+- Controls and Mouse cursor hide automatically after 4s after mouse movement stops during playback
+- State management using [Mobx](https://mobx.js.org/)
+- Material Design System via [Material-UI](https://material-ui.com/) React library
+
+### Implemented Animations and Visual Effects
+- Progress Bar expands vertically on hover
+- Volume slider expands horizontally on hover
+- Control buttons increase in size on full-screen
+- Brief pause / play feedback icon transition is shown in the center of the video
+- Playback of timeline red bar is smoothed to mask the slow 4Hz video "timeupdate" event
+- A preview of the peeked time is shown for the timeline as well, using a gray bar behind the main red one
+- A dark backdrop is enabled when dragging the timeline thumb (i.e. when manually changing the current time position)
+
+### Future Improvements
+- Add Typescript
+- Add Tooltips
+- Add playback control using standard key presses
+- Replace Material-UI slider used on video progress and seek with improved custom component with throttling
+- Replace divs used only for styling with Box elements from Material-UI to emulate Atomic CSS more idiomatically
+- Analyze code to find improvements e.g. performance problems
 
 ## Available Scripts
 
@@ -27,12 +54,6 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `yarn eject`
+## Note
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
