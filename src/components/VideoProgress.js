@@ -54,15 +54,17 @@ const useProgressStyles = makeStyles({
 
 const VideoProgress = observer(() => {
   const videoStore = useContext(VideoPlayerContext);
-  const styleInputs = useMemo(() => ({
-    previewEnabled: videoStore.previewPeekIsActive,
-    marginX: videoStore.progressMarginPixels,
-    smoothMove: !videoStore.seekIsPending && videoStore.videoIsPlaying,
-  }), [videoStore.previewPeekIsActive, videoStore.progressMarginPixels, 
-    videoStore.seekIsPending, videoStore.videoIsPlaying]);
 
-  const progressClasses = useProgressStyles(styleInputs);
-  const generalClasses = useGeneralStyles(styleInputs);
+  const progressStyleInputs = useMemo(() => ({
+    previewEnabled: videoStore.previewPeekIsActive,
+  }), [videoStore.previewPeekIsActive]);
+
+  const generalStyleInputs = useMemo(() => ({
+    marginX: videoStore.progressMarginPixels,
+  }), [videoStore.progressMarginPixels]);
+
+  const progressClasses = useProgressStyles(progressStyleInputs);
+  const generalClasses = useGeneralStyles(generalStyleInputs);
 
   return (
     <div className={generalClasses.top}>
@@ -78,7 +80,7 @@ const VideoProgress = observer(() => {
           component="div"
           classes={progressClasses}
           min={0}
-          step={0.01}
+          step={0.1}
           max={videoStore.durationSeconds}
           valueLabelDisplay="off"
           getAriaValueText={formatSecondsToTimeDuration}

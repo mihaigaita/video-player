@@ -1,6 +1,6 @@
 import { makeAutoObservable, configure } from 'mobx';
 import fscreen from 'fscreen';
-import { delayMsAsync } from '../utils/functions';
+import { delayMsAsync, delayNextFrame } from '../utils/functions';
 
 configure({
   enforceActions: "always",
@@ -49,7 +49,6 @@ class VideoStore {
   setVideoElement = (videoElement) => {
     this.videoElement = videoElement;
     videoElement.addEventListener('loadedmetadata', this.updateDuration);
-    videoElement.addEventListener('timeupdate', this.updateTime);
     videoElement.addEventListener('ended', this.handleEnd);
   };
 
@@ -59,7 +58,6 @@ class VideoStore {
   
   cleanUp = () => {
     this.videoElement.removeEventListener('loadedmetadata', this.updateDuration);
-    this.videoElement.removeEventListener('timeupdate', this.updateTime);
     this.videoElement.removeEventListener('ended', this.handleEnd);
 
     this.videoElement = null;
@@ -85,6 +83,11 @@ class VideoStore {
     if (!this.durationSeconds) this.updateDuration();
 
     this.currentPositionSeconds = this.videoElement.currentTime;
+
+    // While the video keeps playing we update the progress bar once for every rendered frame
+    if (!this.videoElement.paused && !this.videoElement.ended) {
+      window.requestAnimationFrame(this.updateTime);
+    }
   };
 
   updateDuration = () => {
@@ -99,6 +102,7 @@ class VideoStore {
     if (this.videoElement.paused || this.videoElement.ended) {
       this.videoElement.play();
       this.videoIsPlaying = true;
+      this.updateTime();
     } else {
       this.videoElement.pause();
       this.videoIsPlaying = false;
@@ -106,18 +110,21 @@ class VideoStore {
   };
 
   handlePreviewSeek = (event) => {
-    if (!this.videoContainer || event.target.offsetWidth < 15) return;
+    if (!this.videoContainer || this.seekIsPending || event.target.offsetWidth < 15) return;
 
     const progressLeftOffset = this.videoContainer.offsetLeft + this.progressMarginPixels;
     this.seekHoverPositionPercent = (event.pageX - progressLeftOffset) * 100 / event.target.offsetWidth;
   };
 
   get seekHoverPositionSeconds() {
-    return this.seekHoverPositionPercent * this.durationSeconds / 100;
+    const hoverTime = this.seekHoverPositionPercent * this.durationSeconds / 100;
+    return this.seekIsPending ? this.currentPositionSeconds : hoverTime;
   }
 
   get seekHoverPositionPercentClamped() {
-    return Math.max(5, Math.min(this.seekHoverPositionPercent, 95));
+    const currentTimePercent = this.currentPositionSeconds * 100 / this.durationSeconds;
+    const hoverPercent = this.seekIsPending ? currentTimePercent : this.seekHoverPositionPercent;
+    return Math.max(5, Math.min(hoverPercent, 95));
   }
 
   startPreviewSeek = (event) => {
@@ -130,14 +137,14 @@ class VideoStore {
     this.previewPeekIsActive = false;
   };
 
-  handleSeek = (event, newPosition) => {
+  handleSeek = (event, newTimePosition) => {
     if (!this.videoElement || !['mousedown', 'mouseup', 'mousemove'].includes(event.type)) return;
 
     const isMouseDown = (event.type === 'mousedown');
     const isMouseUp = (event.type === 'mouseup');
 
     if (isMouseDown) {
-      if (this.videoIsPlaying) {
+      if (!this.videoElement.paused && !this.videoElement.ended) {
         this.videoElement.pause();
         this.videoIsPlaying = false;
         this.videoWasPlayingBeforeSeek = true;
@@ -154,7 +161,8 @@ class VideoStore {
     }
 
     // Update position on mouse down, up and move events
-    this.videoElement.currentTime = newPosition;
+    this.videoElement.currentTime = newTimePosition;
+    this.currentPositionSeconds = newTimePosition;
   };
 
   handleFullscreen = () => {
@@ -202,7 +210,7 @@ class VideoStore {
     this.handlePlayPause();
     this.videoClickAnimationDisplaying = true;
     
-    yield delayMsAsync(0);
+    yield delayNextFrame();
     this.videoClickAnimationDisplaying = false;
   };
 
@@ -210,7 +218,6 @@ class VideoStore {
     this.userIsIdle = false;
 
     yield delayMsAsync(4000);
-
     this.setUserAsIdle();
   };
 }

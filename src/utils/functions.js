@@ -11,7 +11,10 @@ const formatSecondsToTimeDuration = (value) => {
 
 const delayMsAsync = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const delayNextFrame = () => new Promise(window.requestAnimationFrame);
+
 export {
   formatSecondsToTimeDuration,
   delayMsAsync,
+  delayNextFrame,
 };
