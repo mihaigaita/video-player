@@ -73,7 +73,7 @@ const VideoControls = observer(() => {
     // Cancel any existing scheduled hiding of video controls
     pendingControlHideHandler?.current?.cancel();
 
-    const pendingHideHandle = videoStore.setUserAsActive.call(videoStore);
+    const pendingHideHandle = videoStore.setUserAsActive();
     pendingHideHandle.catch(() => null);
     pendingControlHideHandler.current = pendingHideHandle;
   }, [videoStore, pendingControlHideHandler]);
@@ -108,7 +108,7 @@ const VideoControls = observer(() => {
         <div 
           className={classes.aboveControls} 
           ref={setAboveControlsRef}
-          onClick={videoStore.handleVideoClick.bind(videoStore)}
+          onClick={videoStore.handleVideoClick}
         />
 
         <div className={classes.controlsAndProgress}>

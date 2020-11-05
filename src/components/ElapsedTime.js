@@ -8,25 +8,29 @@ import { formatSecondsToTimeDuration } from '../utils/functions';
 import { VideoPlayerContext } from './VideoPlayer';
 
 
-const useStyles = makeStyles((theme) => ({
-  textWrapper: {
+const useContainerStyles = makeStyles((theme) => ({
+  top: {
     paddingTop: theme.spacing(1),
     display: 'flex',
     alignItems: 'center',
   },
-  textRoot: {
+}));
+
+const useTextStyles = makeStyles({
+  root: {
     lineHeight: '100%',
   },
-}));
+});
 
 const ElapsedTime = observer(() => {
   const videoStore = useContext(VideoPlayerContext);
-  const classes = useStyles();
+  const wrapperClasses = useContainerStyles();
+  const textClasses = useTextStyles();
 
   return (
-    <div className={classes.textWrapper}>
+    <div className={wrapperClasses.top}>
       <Typography
-        classes={{ root: classes.textRoot }}
+        classes={textClasses.textClasses}
         variant="body2" 
         color="secondary"
       >

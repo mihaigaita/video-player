@@ -42,6 +42,8 @@ class VideoStore {
     this.seekHoverPositionPercent = 0;
     this.previewPeekIsActive = false;
     this.pointerIsHovering = false;
+    this.handleVideoClick = this.handleVideoClickFlow.bind(this);
+    this.setUserAsActive = this.setUserAsActiveFlow.bind(this);
   };
 
   setVideoElement = (videoElement) => {
@@ -196,7 +198,7 @@ class VideoStore {
     this.pointerIsHovering = false;
   }
 
-  *handleVideoClick() {
+  *handleVideoClickFlow() {
     this.handlePlayPause();
     this.videoClickAnimationDisplaying = true;
     
@@ -204,7 +206,7 @@ class VideoStore {
     this.videoClickAnimationDisplaying = false;
   };
 
-  *setUserAsActive() {
+  *setUserAsActiveFlow() {
     this.userIsIdle = false;
 
     yield delayMsAsync(4000);

@@ -68,7 +68,7 @@ const VolumeControl = observer(() => {
         aria-label="volume"
         onClick={videoStore.toggleVolume}
       >
-        {(videoStore.volumeLevel <= 0 || videoStore.volumeIsMuted) 
+        {((videoStore.volumeLevel <= 0) || videoStore.volumeIsMuted) 
           ? <VolumeOffIcon />
           : (videoStore.volumeLevel >= 0.5) 
             ? <VolumeUpIcon />

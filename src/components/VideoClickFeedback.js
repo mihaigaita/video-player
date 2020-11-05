@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
 import clsx from 'clsx';
@@ -26,7 +26,7 @@ const useFeedbackStyles = makeStyles({
   },
   actionAnimationStart: {
     fontSize: "4rem",
-    opacity: 0.3,
+    opacity: 0.5,
   },
   actionRestState: {
     transition: 'all 0.5s ease-out',
@@ -38,6 +38,12 @@ const useFeedbackStyles = makeStyles({
 const VideoClickFeedback = observer(() => {
   const videoStore = useContext(VideoPlayerContext);
   const classes = useFeedbackStyles();
+
+  const iconClasses = useMemo(() => ({ 
+    root: videoStore.videoClickAnimationDisplaying 
+      ? classes.actionAnimationStart 
+      : classes.actionRestState 
+  }), [videoStore.videoClickAnimationDisplaying, classes]);
 
   const FeedbackIconType = (videoStore.videoIsPlaying)
     ? PlayCircleFilledIcon 
@@ -51,7 +57,7 @@ const VideoClickFeedback = observer(() => {
       )}
     >
       <FeedbackIconType
-        classes={{ root: videoStore.videoClickAnimationDisplaying ? classes.actionAnimationStart : classes.actionRestState }}
+        classes={iconClasses}
         color="secondary"
       />
     </div>

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,8 +8,9 @@ import Slider from '@material-ui/core/Slider';
 import { formatSecondsToTimeDuration } from '../utils/functions';
 import { VideoPlayerContext } from './VideoPlayer';
 import TimePreview from './TimePreview';
+import SeekPreview from './SeekPreview';
 
-const useProgressStyles = makeStyles({
+const useGeneralStyles = makeStyles({
   top: {
     position: 'relative',
     marginLeft: ({ marginX }) => marginX,
@@ -19,16 +20,9 @@ const useProgressStyles = makeStyles({
     position: 'relative',
     height: 16,
   },
-  seekPreview: {
-    top: '50%',
-    position: 'absolute',
-    height: ({ previewEnabled }) => previewEnabled ? 5 : 3,
-    marginTop: ({ previewEnabled }) => previewEnabled ? -2.5 : -1.5,
-    left: 0,
-    width: ({ seekTarget }) => `${seekTarget}%`,
-    zIndex: -1,
-    background: '#666',
-  },
+});
+
+const useProgressStyles = makeStyles({
   root: {
     position: 'absolute',
     top: 0,
@@ -41,43 +35,45 @@ const useProgressStyles = makeStyles({
     '&:focus, &:hover, &$active': {
       boxShadow: 'unset',
     },
-  },
-  hide: {
-    opacity: 0,
+    opacity: ({ previewEnabled }) => previewEnabled ? 1 : 0,
+    transition: 'all 0.25s linear',
+    transitionProperty: ({ smoothMove }) => smoothMove ? 'left' : 'none',
   },
   active: { },
-  smoothMove: {
-    transition: 'all 0.25s linear',
-    transitionProperty: 'width, left',
-  },
-  track: ({ previewEnabled }) => ({
+  track: {
     top: '50%',
-    height: previewEnabled ? 5 : 3,
-    marginTop: previewEnabled ? -2.5 : -1.5,
+    height: ({ previewEnabled }) => previewEnabled ? 5 : 3,
+    marginTop: ({ previewEnabled }) => previewEnabled ? -2.5 : -1.5,
     pointerEvents: 'none',
-  }),
-  rail: ({ previewEnabled }) => ({
+    transition: 'all 0.25s linear',
+    transitionProperty: ({ smoothMove }) => smoothMove ? 'width' : 'none',
+  },
+  rail: {
     top: '50%',
-    height: previewEnabled ? 5 : 3,
-    marginTop: previewEnabled ? -2.5 : -1.5,
+    height: ({ previewEnabled }) => previewEnabled ? 5 : 3,
+    marginTop: ({ previewEnabled }) => previewEnabled ? -2.5 : -1.5,
     backgroundColor: 'gray',
     opacity: 0.4,
-  }),
+  },
 });
 
 const VideoProgress = observer(() => {
   const videoStore = useContext(VideoPlayerContext);
-  const classes = useProgressStyles({ 
-    seekTarget: videoStore.seekHoverPositionPercent,
-    marginX: videoStore.progressMarginPixels,
+  const styleInputs = useMemo(() => ({
     previewEnabled: videoStore.previewPeekIsActive,
-  });
+    marginX: videoStore.progressMarginPixels,
+    smoothMove: !videoStore.seekIsPending && videoStore.videoIsPlaying,
+  }), [videoStore.previewPeekIsActive, videoStore.progressMarginPixels, 
+    videoStore.seekIsPending, videoStore.videoIsPlaying]);
+
+  const progressClasses = useProgressStyles(styleInputs);
+  const generalClasses = useGeneralStyles(styleInputs);
 
   return (
-    <div className={classes.top}>
+    <div className={generalClasses.top}>
       <TimePreview />
       
-      <div className={classes.progressContainer}>
+      <div className={generalClasses.progressContainer}>
         <Slider
           onMouseMove={videoStore.handlePreviewSeek}
           onMouseLeave={videoStore.cancelPreviewSeek}
@@ -85,20 +81,7 @@ const VideoProgress = observer(() => {
           onChange={videoStore.handleSeek}
           onChangeCommitted={videoStore.handleSeek}
           component="div"
-          classes={{
-            root: classes.root,
-            active: classes.active,
-            rail: classes.rail,
-            track: clsx(
-              classes.track, 
-              !videoStore.seekIsPending && classes.smoothMove,
-            ),
-            thumb: clsx(
-              classes.thumb, 
-              !videoStore.seekIsPending && classes.smoothMove, 
-              !videoStore.previewPeekIsActive && classes.hide,
-            ),
-          }}
+          classes={progressClasses}
           min={0}
           step={0.01}
           max={videoStore.durationSeconds}
@@ -108,7 +91,7 @@ const VideoProgress = observer(() => {
           value={videoStore.currentPositionSeconds}
         />
 
-        <div className={classes.seekPreview} />
+        <SeekPreview />
       </div>
     </div>
   );

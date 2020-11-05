@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 
 const useControlStyles = makeStyles({
-  iconRoot: {
+  root: {
     padding: 0,
     '&:hover': {
       backgroundColor: 'unset',
@@ -17,7 +17,7 @@ const VideoControlButton = ({ children, onClick, ...otherProps }) => {
 
   return (
     <IconButton 
-      classes={{ root: classes.iconRoot}} 
+      classes={classes}
       disableFocusRipple 
       disableRipple
       onClick={onClick}
