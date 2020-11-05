@@ -1,5 +1,4 @@
 import { useContext, useMemo } from 'react';
-import clsx from 'clsx';
 import { observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -36,8 +35,6 @@ const useProgressStyles = makeStyles({
       boxShadow: 'unset',
     },
     opacity: ({ previewEnabled }) => previewEnabled ? 1 : 0,
-    transition: 'all 0.25s linear',
-    transitionProperty: ({ smoothMove }) => smoothMove ? 'left' : 'none',
   },
   active: { },
   track: {
@@ -45,8 +42,6 @@ const useProgressStyles = makeStyles({
     height: ({ previewEnabled }) => previewEnabled ? 5 : 3,
     marginTop: ({ previewEnabled }) => previewEnabled ? -2.5 : -1.5,
     pointerEvents: 'none',
-    transition: 'all 0.25s linear',
-    transitionProperty: ({ smoothMove }) => smoothMove ? 'width' : 'none',
   },
   rail: {
     top: '50%',

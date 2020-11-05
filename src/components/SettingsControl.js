@@ -100,7 +100,8 @@ const SettingsControl = observer(({ aboveControlsRef }) => {
           playbackSpeeds.map((speed, index) => {
             const textContent = (speed === 1) ? 'Normal' : speed.toString().padStart(3, ' ');
             const isSelected = (selectedItemIndex === index);
-            const itemOnClick = useMemo(() => makeOnMenuItemClick(speed, index), [speed, index]);
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            const itemOnClick = useCallback(makeOnMenuItemClick(speed, index), [makeOnMenuItemClick]);
 
             return (
               <MenuItem
