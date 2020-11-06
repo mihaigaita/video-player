@@ -52,11 +52,13 @@ class VideoStore {
 
   setVideoContainer = (videoContainer) => {
     this.videoContainer = videoContainer;
+    fscreen.addEventListener('fullscreenchange', this.handleFullscreenChange);
   };
   
   cleanUp = () => {
     this.videoElement.removeEventListener('loadedmetadata', this.updateDuration);
     this.videoElement.removeEventListener('ended', this.handleEnd);
+    this.videoContainer.removeEventListener('fullscreenchange', this.handleFullscreenChange);
 
     this.videoElement = null;
     this.videoContainer = null;
@@ -167,12 +169,20 @@ class VideoStore {
     if (fscreen.fullscreenEnabled && this.videoContainer) {
       if (this.fullscreenIsActive && fscreen.fullscreenElement) {
         fscreen.exitFullscreen();
-        this.fullscreenIsActive = false;
-        document.documentElement.style.fontSize = "100%";
       } else {
         fscreen.requestFullscreen(this.videoContainer);
+      }
+    }
+  };
+
+  handleFullscreenChange = () => {
+    if (fscreen.fullscreenEnabled && this.videoContainer) {
+      if (fscreen.fullscreenElement) {
         this.fullscreenIsActive = true;
         document.documentElement.style.fontSize = "150%";
+      } else {
+        this.fullscreenIsActive = false;
+        document.documentElement.style.fontSize = "100%";
       }
     }
   };
