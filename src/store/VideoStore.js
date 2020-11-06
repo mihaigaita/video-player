@@ -13,7 +13,6 @@ configure({
 class VideoStore {
   videoElement = null;
   videoContainer = null;
-  progressMarginPixels = 16;
 
   constructor() {
     this.setInitialState();
@@ -24,7 +23,6 @@ class VideoStore {
       setVideoElement: false,
       cleanUp: false,
       videoWasPlayingBeforeSeek: false,
-      progressMarginPixels: false,
     });
   }
 
@@ -112,8 +110,8 @@ class VideoStore {
   handlePreviewSeek = (event) => {
     if (!this.videoContainer || this.seekIsPending || event.target.offsetWidth < 15) return;
 
-    const progressLeftOffset = this.videoContainer.offsetLeft + this.progressMarginPixels;
-    this.seekHoverPositionPercent = (event.pageX - progressLeftOffset) * 100 / event.target.offsetWidth;
+    const { width, left } = event.target.getBoundingClientRect();
+    this.seekHoverPositionPercent = (event.pageX - left) * 100 / width;
   };
 
   get seekHoverPositionSeconds() {
@@ -194,7 +192,8 @@ class VideoStore {
   };
  
   handlePlaybackSpeedChange = (speed) => {
-    if (!this.videoElement) return;
+    if (!this.videoElement || speed < 0 || speed > 2 || !Number.isFinite(speed)) return;
+    
     this.videoElement.playbackRate = speed;
   };
 

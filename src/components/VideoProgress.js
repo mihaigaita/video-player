@@ -9,17 +9,16 @@ import { VideoPlayerContext } from './VideoPlayer';
 import TimePreview from './TimePreview';
 import SeekPreview from './SeekPreview';
 
-const useGeneralStyles = makeStyles({
+const useGeneralStyles = makeStyles(theme => ({
   top: {
     position: 'relative',
-    marginLeft: ({ marginX }) => marginX,
-    marginRight: ({ marginX }) => marginX,
+    margin: theme.spacing(0, 4),
   },
   progressContainer: {
     position: 'relative',
     height: 16,
   },
-});
+}));
 
 const useProgressStyles = makeStyles({
   root: {
@@ -59,12 +58,8 @@ const VideoProgress = observer(() => {
     previewEnabled: videoStore.previewPeekIsActive,
   }), [videoStore.previewPeekIsActive]);
 
-  const generalStyleInputs = useMemo(() => ({
-    marginX: videoStore.progressMarginPixels,
-  }), [videoStore.progressMarginPixels]);
-
   const progressClasses = useProgressStyles(progressStyleInputs);
-  const generalClasses = useGeneralStyles(generalStyleInputs);
+  const generalClasses = useGeneralStyles();
 
   return (
     <div className={generalClasses.top}>
