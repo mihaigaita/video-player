@@ -1,4 +1,4 @@
-import { createContext, useRef, useEffect, useState } from "react"
+import { createContext, useRef, useEffect, useCallback } from "react"
 import { makeStyles } from '@material-ui/core/styles';
 
 import VideoControls from './VideoControls';
@@ -27,33 +27,44 @@ const Video = ({
   const classes = useStyles();
   const videoElementRef = useRef();
   const videoContainerRef = useRef();
+  const videoStoreRef = useRef(null);
 
   // Lazy initialization of a single videoStore instance per mounted component
-  const [videoStore] = useState(() => new VideoStore());
+  const getStore = useCallback(() => {
+    if (!videoStoreRef.current) {
+      videoStoreRef.current = new VideoStore();
+    }
 
+    return videoStoreRef.current;
+  }, [videoStoreRef]);
+  
+  // Assign component refs required by the video store after rendering & DOM insertion
   useEffect(() => {
+    const videoStore = getStore();
+
     if (videoElementRef.current) {
       videoStore.setVideoElement(videoElementRef.current);
     }
-
+    
     if (videoContainerRef.current) {
       videoStore.setVideoContainer(videoContainerRef.current);
     }
-
+    
     return videoStore.cleanUp;
-  }, [videoStore]);
-
-  // Reset store state if the video content changes
+  }, [getStore]);
+  
+  // Reset store state if the video component props change
   useEffect(() => {
+    const videoStore = getStore();
     videoStore.setInitialState();
-  }, [sourceList, videoStore]);
+  });
 
   return (
-    <div 
+    <div
       className={classes.videoContainer}
       ref={videoContainerRef}
     >
-      <VideoPlayerContext.Provider value={videoStore} >
+      <VideoPlayerContext.Provider value={getStore()} >
         <video
           id="video"
           ref={videoElementRef}

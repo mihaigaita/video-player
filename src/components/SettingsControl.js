@@ -54,7 +54,7 @@ const SettingsControl = observer(({ aboveControlsRef }) => {
   const iconClasses = useIconStyles();
 
   useEffect(() => {
-    if (!aboveControlsRef) return void(0);
+    if (!aboveControlsRef) return;
 
     popupState.setAnchorEl(aboveControlsRef);
   }, [popupState, aboveControlsRef]);
