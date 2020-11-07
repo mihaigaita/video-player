@@ -6,9 +6,6 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
     "clsx": "^1.1.1",
     "fscreen": "^1.1.0",
     "material-ui-popup-state": "^1.7.0",
@@ -17,7 +14,6 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.0",
-    "source-map-explorer": "^2.5.0",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
@@ -44,5 +40,17 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.5",
+    "@testing-library/react": "^11.1.1",
+    "@testing-library/user-event": "^12.2.0",
+    "@types/fscreen": "^1.0.1",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^14.14.6",
+    "@types/react": "^16.9.56",
+    "@types/react-dom": "^16.9.9",
+    "source-map-explorer": "^2.5.0",
+    "typescript": "^4.0.5"
   }
 }

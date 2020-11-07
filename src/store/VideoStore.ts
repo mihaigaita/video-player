@@ -1,6 +1,7 @@
 import { makeAutoObservable, configure } from 'mobx';
 import fscreen from 'fscreen';
 import { delayMsAsync, delayNextFrame } from '../utils/functions';
+import { MouseEventHandler } from 'react';
 
 configure({
   enforceActions: "always",
@@ -11,8 +12,23 @@ configure({
 });
 
 class VideoStore {
-  videoElement = null;
-  videoContainer = null;
+  videoElement: HTMLVideoElement | null = null;
+  videoContainer: HTMLDivElement | null = null;
+  videoIsPlaying = false;
+  volumeLevel = 1;
+  volumeIsMuted = false;
+  currentPositionSeconds = 0;
+  durationSeconds = 0;
+  fullscreenIsActive = false;
+  videoClickAnimationDisplaying = false;
+  userIsIdle = false;
+  seekIsPending = false;
+  videoWasPlayingBeforeSeek = false;
+  seekHoverPositionPercent = 0;
+  previewPeekIsActive = false;
+  pointerIsHovering = false;
+  handleVideoClick = function*() { (yield Promise.resolve(0)) as void; };
+  setUserAsActive = function*() { (yield Promise.resolve(0)) as void; };
 
   constructor() {
     this.setInitialState();
@@ -44,21 +60,23 @@ class VideoStore {
     this.setUserAsActive = this.setUserAsActiveFlow.bind(this);
   };
 
-  setVideoElement = (videoElement) => {
+  setVideoElement = (videoElement: HTMLVideoElement) => {
     this.videoElement = videoElement;
-    videoElement.addEventListener('loadedmetadata', this.updateDuration);
-    videoElement.addEventListener('ended', this.handleEnd);
+    if (videoElement) {
+      videoElement.addEventListener('loadedmetadata', this.updateDuration);
+      videoElement.addEventListener('ended', this.handleEnd);
+    }
   };
 
-  setVideoContainer = (videoContainer) => {
+  setVideoContainer = (videoContainer: HTMLDivElement) => {
     this.videoContainer = videoContainer;
     fscreen.addEventListener('fullscreenchange', this.handleFullscreenChange);
   };
   
   cleanUp = () => {
-    this.videoElement.removeEventListener('loadedmetadata', this.updateDuration);
-    this.videoElement.removeEventListener('ended', this.handleEnd);
-    this.videoContainer.removeEventListener('fullscreenchange', this.handleFullscreenChange);
+    this.videoElement?.removeEventListener('loadedmetadata', this.updateDuration);
+    this.videoElement?.removeEventListener('ended', this.handleEnd);
+    this.videoContainer?.removeEventListener('fullscreenchange', this.handleFullscreenChange);
 
     this.videoElement = null;
     this.videoContainer = null;
@@ -90,7 +108,7 @@ class VideoStore {
     }
   };
 
-  updateDuration = () => {
+  updateDuration = (): void => {
     if (!this.videoElement) return;
 
     this.durationSeconds = Math.floor(this.videoElement.duration);
@@ -109,35 +127,37 @@ class VideoStore {
     }
   };
 
-  handlePreviewSeek = (event) => {
-    if (!this.videoContainer || this.seekIsPending || event.target.offsetWidth < 15) return;
+  handlePreviewSeek: MouseEventHandler = (event) => {
+    const targetElement = event.currentTarget;
+    const { width, left } = targetElement.getBoundingClientRect();
 
-    const { width, left } = event.target.getBoundingClientRect();
+    if (!this.videoContainer || this.seekIsPending || width < 15) return;
     this.seekHoverPositionPercent = (event.pageX - left) * 100 / width;
   };
 
-  get seekHoverPositionSeconds() {
+  get seekHoverPositionSeconds(): number {
     const hoverTime = this.seekHoverPositionPercent * this.durationSeconds / 100;
     return this.seekIsPending ? this.currentPositionSeconds : hoverTime;
   }
 
-  get seekHoverPositionPercentClamped() {
+  get seekHoverPositionPercentClamped(): number {
     const currentTimePercent = this.currentPositionSeconds * 100 / this.durationSeconds;
     const hoverPercent = this.seekIsPending ? currentTimePercent : this.seekHoverPositionPercent;
     return Math.max(5, Math.min(hoverPercent, 95));
   }
 
-  startPreviewSeek = (event) => {
+  startPreviewSeek: MouseEventHandler = (event) => {
     this.handlePreviewSeek(event);
     this.previewPeekIsActive = true;
   };
 
-  cancelPreviewSeek = () => {
+  cancelPreviewSeek: MouseEventHandler = (event) => {
     this.seekHoverPositionPercent = 0;
     this.previewPeekIsActive = false;
   };
 
-  handleSeek = (event, newTimePosition) => {
+  handleSeek = (event: React.ChangeEvent<{}>, newTime: number | number[]): void => {
+    if (typeof newTime !== 'number') return;
     if (!this.videoElement || !['mousedown', 'mouseup', 'mousemove'].includes(event.type)) return;
 
     const isMouseDown = (event.type === 'mousedown');
@@ -156,16 +176,17 @@ class VideoStore {
       if (this.videoWasPlayingBeforeSeek) {
         this.videoElement.play();
         this.videoIsPlaying = true;
+        this.updateTime();
       }
       this.seekIsPending = false;
     }
 
     // Update position on mouse down, up and move events
-    this.videoElement.currentTime = newTimePosition;
-    this.currentPositionSeconds = newTimePosition;
+    this.videoElement.currentTime = newTime;
+    this.currentPositionSeconds = newTime;
   };
 
-  handleFullscreen = () => {
+  handleFullscreen = (): void => {
     if (fscreen.fullscreenEnabled && this.videoContainer) {
       if (this.fullscreenIsActive && fscreen.fullscreenElement) {
         fscreen.exitFullscreen();
@@ -175,7 +196,7 @@ class VideoStore {
     }
   };
 
-  handleFullscreenChange = () => {
+  handleFullscreenChange = (): void => {
     if (fscreen.fullscreenEnabled && this.videoContainer) {
       if (fscreen.fullscreenElement) {
         this.fullscreenIsActive = true;
@@ -187,35 +208,36 @@ class VideoStore {
     }
   };
 
-  handleVolumeChange = (event, newVolume) => {
+  handleVolumeChange = (event: React.ChangeEvent<{}>, newVolume: number | number[]): void => {
+    if (typeof newVolume !== 'number') return;
     if (!this.videoElement || newVolume < 0 || newVolume > 1 || !Number.isFinite(newVolume)) return;
 
     this.videoElement.volume = newVolume;
     this.volumeLevel = newVolume;
   };
 
-  toggleVolume = () => {
+  toggleVolume = (): void => {
     if (!this.videoElement) return;
     
     this.volumeIsMuted = !this.volumeIsMuted;
     this.videoElement.muted = this.volumeIsMuted;
   };
  
-  handlePlaybackSpeedChange = (speed) => {
+  handlePlaybackSpeedChange = (speed: number): void => {
     if (!this.videoElement || speed < 0 || speed > 2 || !Number.isFinite(speed)) return;
     
     this.videoElement.playbackRate = speed;
   };
 
-  handleVolumeOnHover = () => {
+  handleVolumeOnHover = (): void => {
     this.pointerIsHovering = true;
   }
 
-  handleVolumeOnHoverExit = () => {
+  handleVolumeOnHoverExit = (): void => {
     this.pointerIsHovering = false;
   }
 
-  *handleVideoClickFlow() {
+  *handleVideoClickFlow(): Generator<Promise<number>, void, void> {
     this.handlePlayPause();
     this.videoClickAnimationDisplaying = true;
     
@@ -223,7 +245,7 @@ class VideoStore {
     this.videoClickAnimationDisplaying = false;
   };
 
-  *setUserAsActiveFlow() {
+  *setUserAsActiveFlow(): Generator<Promise<number>, void, void> {
     this.userIsIdle = false;
 
     yield delayMsAsync(4000);

@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import * as React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
 import clsx from 'clsx';
@@ -35,11 +35,11 @@ const useFeedbackStyles = makeStyles({
   },
 });
 
-const VideoClickFeedback = observer(() => {
-  const videoStore = useContext(VideoPlayerContext);
+const VideoClickFeedback: React.FC<{}> = () => {
+  const videoStore = React.useContext(VideoPlayerContext);
   const classes = useFeedbackStyles();
 
-  const iconClasses = useMemo(() => ({ 
+  const iconClasses = React.useMemo(() => ({ 
     root: videoStore.videoClickAnimationDisplaying 
       ? classes.actionAnimationStart 
       : classes.actionRestState 
@@ -62,6 +62,6 @@ const VideoClickFeedback = observer(() => {
       />
     </div>
   );
-});
+};
 
-export default VideoClickFeedback;
+export default observer(VideoClickFeedback);

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
@@ -12,11 +12,17 @@ const useControlStyles = makeStyles({
   }
 });
 
-const VideoControlButton = ({ children, onClick, ...otherProps }) => {
+type VideoControlButtonProps = {
+  children: React.ReactElement,
+  onClick: React.EventHandler<React.SyntheticEvent>,
+  [otherProps: string]: any,
+};
+
+const VideoControlButton: React.FC<VideoControlButtonProps> = ({ children, onClick, ...otherProps }) => {
   const classes = useControlStyles();
 
   return (
-    <IconButton 
+    <IconButton
       classes={classes}
       disableFocusRipple 
       disableRipple

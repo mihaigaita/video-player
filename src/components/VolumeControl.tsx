@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import * as React from 'react';
 import { observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -41,7 +41,6 @@ const useSliderStyles = makeStyles((theme) => ({
 
 const useSliderContainerStyles = makeStyles({
   container: {
-    width: ({ pointerIsHovering }) => pointerIsHovering ? 76 : 0,
     display: 'flex',
     alignItems: 'center',
     transition: 'width .2s cubic-bezier(0.4, 0.0, 1, 1)',
@@ -49,14 +48,18 @@ const useSliderContainerStyles = makeStyles({
   },
 });
 
-const VolumeControl = observer(() => {
+const VolumeControl: React.FC<{}> = () => {
   const volumeClasses = useVolumeStyles();
-  const videoStore = useContext(VideoPlayerContext);
+  const videoStore = React.useContext(VideoPlayerContext);
 
   const sliderClasses = useSliderStyles();
   const sliderContainerClasses = useSliderContainerStyles({ 
     pointerIsHovering: videoStore.pointerIsHovering 
   });
+
+  const sliderContainerStyle = React.useMemo(() => ({ 
+    width: videoStore.pointerIsHovering ? 76 : 0 
+  }), [videoStore.pointerIsHovering]);
 
   return (
     <div 
@@ -76,7 +79,10 @@ const VolumeControl = observer(() => {
         }
       </VideoControlButton>
 
-      <div className={sliderContainerClasses.container}>
+      <div 
+        className={sliderContainerClasses.container} 
+        style={sliderContainerStyle}
+      >
         <Slider
           classes={sliderClasses}
           min={0}
@@ -91,6 +97,6 @@ const VolumeControl = observer(() => {
       </div>
     </div>
   );
-});
+};
 
-export default VolumeControl;
+export default observer(VolumeControl);

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import * as React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
 
@@ -22,15 +22,15 @@ const useTextStyles = makeStyles({
   },
 });
 
-const ElapsedTime = observer(() => {
-  const videoStore = useContext(VideoPlayerContext);
+const ElapsedTime: React.FC<{}> = () => {
+  const videoStore = React.useContext(VideoPlayerContext);
   const wrapperClasses = useContainerStyles();
   const textClasses = useTextStyles();
 
   return (
     <div className={wrapperClasses.top}>
       <Typography
-        classes={textClasses.textClasses}
+        classes={textClasses}
         variant="body2" 
         color="secondary"
       >
@@ -39,6 +39,6 @@ const ElapsedTime = observer(() => {
       </Typography>
     </div>
   );
-});
+};
 
-export default ElapsedTime;
+export default observer(ElapsedTime);

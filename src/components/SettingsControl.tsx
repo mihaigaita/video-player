@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import * as React from 'react';
 import { observer } from 'mobx-react';
 import {
   usePopupState,
@@ -18,7 +18,6 @@ import { VideoPlayerContext } from './VideoPlayer';
 
 const useMenuStyles = makeStyles(theme => ({
   paper: {
-    maxHeight: ({ maxHeight }) => maxHeight,
     backgroundColor: '#000d',
     '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
       color: theme.palette.common.white,
@@ -33,16 +32,20 @@ const useIconStyles = makeStyles(theme => ({
 }));
 
 const playbackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-const anchorOrigin = { vertical: 'bottom', horizontal: 'right' };
-const transformOrigin = { vertical: 'bottom', horizontal: 'right' };
-const listItemTypographyVariant = { variant: "body2" };
+const anchorOrigin = { vertical: 'bottom' as 'bottom', horizontal: 'right' as 'right' };
+const transformOrigin = { vertical: 'bottom' as 'bottom', horizontal: 'right' as 'right' };
+const listItemTypographyVariant = { variant: 'body2' as 'body2' };
 const opacityOnStyle = { opacity: 1 };
 const opacityOffStyle = { opacity: 0 };
 
-const SettingsControl = observer(({ aboveControlsRef }) => {
-  const videoStore = useContext(VideoPlayerContext);
+type SettingsControlProps = {
+  aboveControlsRef: HTMLDivElement | null,
+};
+
+const SettingsControl: React.FC<SettingsControlProps> = ({ aboveControlsRef = null }) => {
+  const videoStore = React.useContext(VideoPlayerContext);
   const popupState = usePopupState({ variant: 'popover', popupId: 'settingsMenu' });
-  const [selectedItemIndex, setSelectedItemIndex] = useState(3);
+  const [selectedItemIndex, setSelectedItemIndex] = React.useState(3);
   
   let clampedMinMaxAvailableContainerHeight = 500;
   if (aboveControlsRef) {
@@ -50,16 +53,20 @@ const SettingsControl = observer(({ aboveControlsRef }) => {
     clampedMinMaxAvailableContainerHeight = Math.max(50, clampedMaxAvailableContainerHeight);
   }
 
-  const menuClasses = useMenuStyles({ maxHeight: clampedMinMaxAvailableContainerHeight });
+  const paperStyles = React.useMemo(() => ({
+    maxHeight: clampedMinMaxAvailableContainerHeight
+  }), [clampedMinMaxAvailableContainerHeight]);
+
+  const menuClasses = useMenuStyles();
   const iconClasses = useIconStyles();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!aboveControlsRef) return;
 
     popupState.setAnchorEl(aboveControlsRef);
   }, [popupState, aboveControlsRef]);
 
-  const makeOnMenuItemClick = useCallback((speed, index) => (event) => {
+  const makeOnMenuItemClick = React.useCallback((speed, index) => (event: React.SyntheticEvent) => {
     setSelectedItemIndex(index);
     videoStore.handlePlaybackSpeedChange(speed);
     popupState.close();
@@ -84,10 +91,10 @@ const SettingsControl = observer(({ aboveControlsRef }) => {
         classes={menuClasses}
         disablePortal={true}
         keepMounted={true}
+        style={paperStyles}
       >
         <MenuItem 
           divider={true} 
-          disabled={true}
         >
           <ListItemText 
             primaryTypographyProps={listItemTypographyVariant} 
@@ -100,8 +107,8 @@ const SettingsControl = observer(({ aboveControlsRef }) => {
           playbackSpeeds.map((speed, index) => {
             const textContent = (speed === 1) ? 'Normal' : speed.toString().padStart(3, ' ');
             const isSelected = (selectedItemIndex === index);
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-            const itemOnClick = useCallback(makeOnMenuItemClick(speed, index), [makeOnMenuItemClick]);
+            // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/rules-of-hooks
+            const itemOnClick = React.useCallback(makeOnMenuItemClick(speed, index), [makeOnMenuItemClick]);
 
             return (
               <MenuItem
@@ -124,6 +131,6 @@ const SettingsControl = observer(({ aboveControlsRef }) => {
       </Menu>
     </div>
   );
-});
+};
 
-export default SettingsControl;
+export default observer(SettingsControl);

@@ -1,6 +1,7 @@
-import { useContext, useCallback, useState, useRef } from 'react';
+import * as React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
+import { flowResult } from 'mobx';
 import clsx from 'clsx';
 
 import VideoProgress from './VideoProgress';
@@ -11,6 +12,7 @@ import PlaybackControl from './PlaybackControl';
 import VideoClickFeedback from './VideoClickFeedback';
 import ElapsedTime from './ElapsedTime';
 import { VideoPlayerContext } from './VideoPlayer';
+import { CancellablePromise } from 'mobx/dist/api/flow';
 
 
 const useVideoStyles = makeStyles((theme) => ({
@@ -63,22 +65,22 @@ const useVideoStyles = makeStyles((theme) => ({
   }, 
 }));
 
-const VideoControls = observer(() => {
+const VideoControls: React.FC<{}> = () => {
   const classes = useVideoStyles();
-  const videoStore = useContext(VideoPlayerContext);
-  const pendingControlHideHandler = useRef(null);
-  const [aboveControlsRef, setAboveControlsRef] = useState(null);
+  const videoStore = React.useContext(VideoPlayerContext);
+  const pendingControlHideHandler = React.useRef<CancellablePromise<void> | null>(null);
+  const [aboveControlsRef, setAboveControlsRef] = React.useState<HTMLDivElement | null>(null);
 
-  const activateControlsHandler = useCallback(() => {
-    // Cancel any existing scheduled hiding of video controls
+  const activateControlsHandler = React.useCallback(() => {
+    // Cancel any existing scheduled hiding of video controls 
     pendingControlHideHandler?.current?.cancel();
 
-    const pendingHideHandle = videoStore.setUserAsActive();
+    const pendingHideHandle = flowResult(videoStore.setUserAsActive());
     pendingHideHandle.catch(() => null);
     pendingControlHideHandler.current = pendingHideHandle;
   }, [videoStore, pendingControlHideHandler]);
 
-  const hideControlsHandler = useCallback(() => {
+  const hideControlsHandler = React.useCallback(() => {
     // Cancel any existing scheduled hiding of video controls
     pendingControlHideHandler?.current?.cancel();
 
@@ -133,6 +135,6 @@ const VideoControls = observer(() => {
       </div>
     </div>
   );
-});
+};
 
-export default VideoControls;
+export default observer(VideoControls);

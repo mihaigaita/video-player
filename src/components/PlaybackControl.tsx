@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import * as React from 'react';
 import { observer } from 'mobx-react';
 
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
@@ -8,8 +8,8 @@ import VideoControlButton from './VideoControlButton';
 import { VideoPlayerContext } from './VideoPlayer';
 
 
-const PlaybackControl = observer(() => {
-  const videoStore = useContext(VideoPlayerContext);
+const PlaybackControl: React.FC<{}> = () => {
+  const videoStore = React.useContext(VideoPlayerContext);
 
   return (
     <VideoControlButton 
@@ -22,6 +22,6 @@ const PlaybackControl = observer(() => {
         : <PlayArrowIcon fontSize="large"/>}
     </VideoControlButton>
   );
-});
+};
 
-export default PlaybackControl;
+export default observer(PlaybackControl);

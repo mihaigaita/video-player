@@ -1,6 +1,6 @@
-# HTML5 Custom Video Player
+# HTML5 Custom React Video Player
 
-Simple Video Player with custom controls, modeled after YouTube.
+Simple Video Player with custom controls, modeled after YouTube. Uses React Hooks and MobX.
 
 Screenshot:
 
@@ -15,7 +15,7 @@ Screenshot:
 - Settings Button (used to change playback speed)
 - Full Screen Button
 - Controls and Mouse cursor hide automatically after 4s after mouse movement stops during playback
-- State management using [Mobx](https://mobx.js.org/)
+- State management using [MobX](https://mobx.js.org/)
 - Material Design System via [Material-UI](https://material-ui.com/) React library
 
 ### Implemented Animations and Visual Effects
@@ -23,7 +23,7 @@ Screenshot:
 - Volume slider expands horizontally on hover
 - Control buttons increase in size on full-screen
 - Brief pause / play feedback icon transition is shown in the center of the video
-- Playback of timeline red bar is smoothed to mask the slow 4Hz video "timeupdate" event
+- Playback of timeline red bar is smoothed using requestAnimationFrame instead of video "timeupdate" event
 - A preview of the peeked time is shown for the timeline as well, using a gray bar behind the main red one
 - A dark backdrop is enabled when dragging the timeline thumb (i.e. when manually changing the current time position)
 
@@ -33,7 +33,7 @@ Screenshot:
 - Add playback control using standard key presses
 - Replace Material-UI slider used on video progress and seek with improved custom component with throttling
 - Replace divs used only for styling with Box elements from Material-UI to emulate Atomic CSS more idiomatically
-- Analyze code to find improvements e.g. performance problems
+- Fix seek preview when hovering near the thumb button in the progress bar
 
 ## Available Scripts
 

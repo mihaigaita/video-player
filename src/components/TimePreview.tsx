@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import * as React from 'react';
 import { observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -8,27 +8,30 @@ import { formatSecondsToTimeDuration } from '../utils/functions';
 import { VideoPlayerContext } from './VideoPlayer';
 
 const usePreviewStyles = makeStyles(theme => ({
-  timePreview: {
+  root: {
     display: 'inline-block',
     position: 'absolute',
     top: '-1.3rem',
-    left: ({ seekTarget }) => `calc(${seekTarget}% - 18px)`,
-    opacity: ({ previewEnabled }) => previewEnabled ? 1 : 0,
     background: 'radial-gradient(#0003, transparent)',
     padding: theme.spacing(0, 2),
     borderRadius: 100,
   },
 }));
 
-const TimePreview = observer(() => {
-  const videoStore = useContext(VideoPlayerContext);
-  const classes = usePreviewStyles({ 
-    seekTarget: videoStore.seekHoverPositionPercentClamped,
-    previewEnabled: videoStore.previewPeekIsActive,
-  });
+const TimePreview: React.FC<{}> = () => {
+  const videoStore = React.useContext(VideoPlayerContext);
+  const classes = usePreviewStyles();
+  
+  const rootStyles = {
+    left: `calc(${videoStore.seekHoverPositionPercentClamped}% - 18px)`,
+    opacity: videoStore.previewPeekIsActive ? 1 : 0,
+  };
 
   return (
-    <div className={classes.timePreview}> 
+    <div 
+      className={classes.root}
+      style={rootStyles}
+    > 
       <Typography
         variant="body2" 
         color="secondary"
@@ -37,6 +40,6 @@ const TimePreview = observer(() => {
       </Typography>
     </div>
   );
-});
+};
 
-export default TimePreview;
+export default observer(TimePreview);

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import * as React from 'react';
 import { observer } from 'mobx-react';
 
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
@@ -8,8 +8,8 @@ import VideoControlButton from './VideoControlButton';
 import { VideoPlayerContext } from './VideoPlayer';
 
 
-const FullScreenControl = observer(() => {
-  const videoStore = useContext(VideoPlayerContext);
+const FullScreenControl: React.FC<{}> = () => {
+  const videoStore = React.useContext(VideoPlayerContext);
 
   return (
     <VideoControlButton 
@@ -22,6 +22,6 @@ const FullScreenControl = observer(() => {
       }
     </VideoControlButton>
   );
-});
+};
 
-export default FullScreenControl;
+export default observer(FullScreenControl);

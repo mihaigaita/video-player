@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import * as React from 'react';
 import { observer } from 'mobx-react';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -17,8 +17,8 @@ const usePreviewStyles = makeStyles({
   },
 });
 
-const SeekPreview = observer(() => {
-  const videoStore = useContext(VideoPlayerContext);
+const SeekPreview: React.FC<{}> = () => {
+  const videoStore = React.useContext(VideoPlayerContext);
   const classes = usePreviewStyles();
 
   return (
@@ -27,6 +27,6 @@ const SeekPreview = observer(() => {
       style={{ width: `${videoStore.seekHoverPositionPercent}%` }}
     />
   );
-});
+};
 
-export default SeekPreview;
+export default observer(SeekPreview);

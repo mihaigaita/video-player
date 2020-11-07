@@ -1,6 +1,6 @@
-import { useContext, useMemo } from 'react';
+import * as React from 'react';
 import { observer } from 'mobx-react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 
 import Slider from '@material-ui/core/Slider';
 
@@ -8,6 +8,7 @@ import { formatSecondsToTimeDuration } from '../utils/functions';
 import { VideoPlayerContext } from './VideoPlayer';
 import TimePreview from './TimePreview';
 import SeekPreview from './SeekPreview';
+
 
 const useGeneralStyles = makeStyles(theme => ({
   top: {
@@ -20,8 +21,13 @@ const useGeneralStyles = makeStyles(theme => ({
   },
 }));
 
-const useProgressStyles = makeStyles({
+type ProgressStyleInputs = {
+  previewEnabled: boolean,
+};
+
+const useProgressStyles = makeStyles<Theme, ProgressStyleInputs>({
   root: {
+    display: 'block',
     position: 'absolute',
     top: 0,
     padding: 0,
@@ -35,7 +41,7 @@ const useProgressStyles = makeStyles({
     },
     opacity: ({ previewEnabled }) => previewEnabled ? 1 : 0,
   },
-  active: { },
+  active: {},
   track: {
     top: '50%',
     height: ({ previewEnabled }) => previewEnabled ? 5 : 3,
@@ -51,10 +57,10 @@ const useProgressStyles = makeStyles({
   },
 });
 
-const VideoProgress = observer(() => {
-  const videoStore = useContext(VideoPlayerContext);
+const VideoProgress: React.FC<{}> = () => {
+  const videoStore = React.useContext(VideoPlayerContext);
 
-  const progressStyleInputs = useMemo(() => ({
+  const progressStyleInputs: ProgressStyleInputs = React.useMemo(() => ({
     previewEnabled: videoStore.previewPeekIsActive,
   }), [videoStore.previewPeekIsActive]);
 
@@ -72,7 +78,6 @@ const VideoProgress = observer(() => {
           onMouseEnter={videoStore.startPreviewSeek}
           onChange={videoStore.handleSeek}
           onChangeCommitted={videoStore.handleSeek}
-          component="div"
           classes={progressClasses}
           min={0}
           step={0.1}
@@ -87,6 +92,6 @@ const VideoProgress = observer(() => {
       </div>
     </div>
   );
-});
+};
 
-export default VideoProgress;
+export default observer(VideoProgress);
