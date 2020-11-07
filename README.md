@@ -28,12 +28,11 @@ Screenshot:
 - A dark backdrop is enabled when dragging the timeline thumb (i.e. when manually changing the current time position)
 
 ### Future Improvements
-- Add Typescript
 - Add Tooltips
 - Add playback control using standard key presses
-- Replace Material-UI slider used on video progress and seek with improved custom component with throttling
 - Replace divs used only for styling with Box elements from Material-UI to emulate Atomic CSS more idiomatically
-- Fix seek preview when hovering near the thumb button in the progress bar
+- Add Jest unit testing
+- Add ESLint best-practice rules including security
 
 ## Available Scripts
 
