@@ -1,30 +1,24 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { makeStyles } from '@material-ui/core/styles';
+
+import Box from '@material-ui/core/Box';
 
 import { VideoPlayerContext } from './VideoPlayer';
 
 
-const usePreviewStyles = makeStyles({
-  seekPreview: {
-    top: '50%',
-    position: 'absolute',
-    height: 5,
-    marginTop: -2.5,
-    left: 0,
-    zIndex: -1,
-    background: '#666',
-  },
-});
-
 const SeekPreview: React.FC<{}> = () => {
   const videoStore = React.useContext(VideoPlayerContext);
-  const classes = usePreviewStyles();
 
   return (
-    <div 
-      className={classes.seekPreview}
-      style={{ width: `${videoStore.seekHoverPositionPercent}%` }}
+    <Box 
+      top="50%"
+      position="absolute"
+      height="5px"
+      marginTop="-2.5px"
+      left={0}
+      zIndex={-1}
+      bgcolor="text.secondary"
+      width={`${videoStore.seekHoverPositionPercent}%`}
     />
   );
 };

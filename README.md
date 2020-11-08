@@ -1,6 +1,6 @@
 # HTML5 Custom React Video Player
 
-Simple Video Player with custom controls, modeled after YouTube. Uses React Hooks and MobX.
+Simple Video Player with custom controls, modeled after YouTube. Uses React Hooks, MobX and Typescript.
 
 Screenshot:
 

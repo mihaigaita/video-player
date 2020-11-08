@@ -1,14 +1,12 @@
 import * as React from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 
 import VideoControls from './VideoControls';
 import VideoStore from '../store/VideoStore';
 
 const useStyles = makeStyles({
-  videoContainer: {
-    position: 'relative',
-    border: '2px solid #555',
-  },
   video: {
     display: 'block',
     objectFit: 'contain',
@@ -19,18 +17,18 @@ const useStyles = makeStyles({
 
 export const VideoPlayerContext = React.createContext<VideoStore>(null!);
 
-type VideoSource = {
+type VideoSourceType = {
   url: string,
   type: string,
 };
 
-type VideoPlayerProps = {
+type VideoPlayerPropsType = {
   posterUrl: string,
   manualDownloadUrl: string,
-  sourceList: VideoSource[],
+  sourceList: VideoSourceType[],
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({
+const VideoPlayer: React.FC<VideoPlayerPropsType> = ({
   posterUrl = '',
   manualDownloadUrl = '',
   sourceList = [],
@@ -71,8 +69,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   });
 
   return (
-    <div
-      className={classes.videoContainer}
+    <Box
+      position='relative'
+      border={2}
+      borderColor='grey.700'
+      // @ts-expect-error
       ref={videoContainerRef}
     >
       <VideoPlayerContext.Provider value={getStore()} >
@@ -95,7 +96,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
         <VideoControls />
       </VideoPlayerContext.Provider>
-    </div>
+    </Box>
   );
 };
 

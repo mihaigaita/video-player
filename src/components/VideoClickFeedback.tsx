@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
-import clsx from 'clsx';
 
+import Box from '@material-ui/core/Box';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
 
@@ -10,20 +10,6 @@ import { VideoPlayerContext } from './VideoPlayer';
 
 
 const useFeedbackStyles = makeStyles({
-  actionFeedbackWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    zIndex: 1,
-    top: 0,
-    left: 0,
-  },
-  backgroundMask: {
-    background: '#000a',
-  },
   actionAnimationStart: {
     fontSize: "4rem",
     opacity: 0.5,
@@ -50,17 +36,23 @@ const VideoClickFeedback: React.FC<{}> = () => {
     : PauseCircleFilledIcon;
 
   return (
-    <div 
-      className={clsx(
-        classes.actionFeedbackWrapper, 
-        videoStore.seekIsPending && classes.backgroundMask
-      )}
+    <Box 
+      display='flex'
+      alignItems='center'
+      justifyContent='center'
+      height='100%'
+      width='100%'
+      position='absolute'
+      zIndex={1}
+      top={0}
+      left={0}
+      bgcolor={videoStore.seekIsPending ? '#000a' : 'initial'}
     >
       <FeedbackIconType
         classes={iconClasses}
         color="secondary"
       />
-    </div>
+    </Box>
   );
 };
 

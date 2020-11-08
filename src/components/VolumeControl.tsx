@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { makeStyles } from '@material-ui/core/styles';
 
+import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 import Slider from '@material-ui/core/Slider';
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
@@ -10,14 +11,6 @@ import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VideoControlButton from './VideoControlButton';
 import { VideoPlayerContext } from './VideoPlayer';
 
-
-const useVolumeStyles = makeStyles((theme) => ({
-  wrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    margin: theme.spacing(0, 2),
-  }
-}));
 
 const useSliderStyles = makeStyles((theme) => ({
   root: {
@@ -39,31 +32,15 @@ const useSliderStyles = makeStyles((theme) => ({
   },
 }));
 
-const useSliderContainerStyles = makeStyles({
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-    transition: 'width .2s cubic-bezier(0.4, 0.0, 1, 1)',
-    overflow: 'hidden',
-  },
-});
-
 const VolumeControl: React.FC<{}> = () => {
-  const volumeClasses = useVolumeStyles();
   const videoStore = React.useContext(VideoPlayerContext);
-
   const sliderClasses = useSliderStyles();
-  const sliderContainerClasses = useSliderContainerStyles({ 
-    pointerIsHovering: videoStore.pointerIsHovering 
-  });
-
-  const sliderContainerStyle = React.useMemo(() => ({ 
-    width: videoStore.pointerIsHovering ? 76 : 0 
-  }), [videoStore.pointerIsHovering]);
 
   return (
-    <div 
-      className={volumeClasses.wrapper}
+    <Box 
+      display='flex'
+      alignItems='center'
+      marginX={2}
       onMouseEnter={videoStore.handleVolumeOnHover}
     >
       <VideoControlButton 
@@ -79,9 +56,12 @@ const VolumeControl: React.FC<{}> = () => {
         }
       </VideoControlButton>
 
-      <div 
-        className={sliderContainerClasses.container} 
-        style={sliderContainerStyle}
+      <Box 
+        display='flex'
+        alignItems='center'
+        overflow='hidden'
+        width={videoStore.pointerIsHovering ? '76px' : '0px'} 
+        style={{ transition: 'width .2s linear' }}
       >
         <Slider
           classes={sliderClasses}
@@ -94,8 +74,8 @@ const VolumeControl: React.FC<{}> = () => {
           aria-label="volume-slider"
           value={videoStore.volumeIsMuted ? 0 : videoStore.volumeLevel} 
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

@@ -131,7 +131,7 @@ class VideoStore {
     const targetElement = event.currentTarget;
     const { width, left } = targetElement.getBoundingClientRect();
 
-    if (!this.videoContainer || this.seekIsPending || width < 15) return;
+    if (!this.videoContainer || this.seekIsPending) return;
     this.seekHoverPositionPercent = (event.pageX - left) * 100 / width;
   };
 

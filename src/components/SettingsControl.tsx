@@ -5,8 +5,9 @@ import {
   bindToggle,
   bindMenu,
 } from 'material-ui-popup-state/hooks'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 
+import Box from '@material-ui/core/Box';
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -16,8 +17,13 @@ import CheckIcon from '@material-ui/icons/Check';
 import VideoControlButton from './VideoControlButton';
 import { VideoPlayerContext } from './VideoPlayer';
 
-const useMenuStyles = makeStyles(theme => ({
+type MenuStylesInputsType = {
+  maxHeight: number,
+};
+
+const useMenuStyles = makeStyles<Theme, MenuStylesInputsType>(theme => ({
   paper: {
+    maxHeight: ({ maxHeight }) => maxHeight,
     backgroundColor: '#000d',
     '& .MuiListItemIcon-root, & .MuiListItemText-primary': {
       color: theme.palette.common.white,
@@ -38,11 +44,11 @@ const listItemTypographyVariant = { variant: 'body2' as 'body2' };
 const opacityOnStyle = { opacity: 1 };
 const opacityOffStyle = { opacity: 0 };
 
-type SettingsControlProps = {
+type SettingsControlPropsType = {
   aboveControlsRef: HTMLDivElement | null,
 };
 
-const SettingsControl: React.FC<SettingsControlProps> = ({ aboveControlsRef = null }) => {
+const SettingsControl: React.FC<SettingsControlPropsType> = ({ aboveControlsRef = null }) => {
   const videoStore = React.useContext(VideoPlayerContext);
   const popupState = usePopupState({ variant: 'popover', popupId: 'settingsMenu' });
   const [selectedItemIndex, setSelectedItemIndex] = React.useState(3);
@@ -53,11 +59,11 @@ const SettingsControl: React.FC<SettingsControlProps> = ({ aboveControlsRef = nu
     clampedMinMaxAvailableContainerHeight = Math.max(50, clampedMaxAvailableContainerHeight);
   }
 
-  const paperStyles = React.useMemo(() => ({
+  const menuStylesInput = React.useMemo(() => ({
     maxHeight: clampedMinMaxAvailableContainerHeight
   }), [clampedMinMaxAvailableContainerHeight]);
 
-  const menuClasses = useMenuStyles();
+  const menuClasses = useMenuStyles(menuStylesInput);
   const iconClasses = useIconStyles();
 
   React.useEffect(() => {
@@ -73,7 +79,7 @@ const SettingsControl: React.FC<SettingsControlProps> = ({ aboveControlsRef = nu
   }, [popupState, videoStore, setSelectedItemIndex]);
 
   return (
-    <div>
+    <Box>
       <VideoControlButton 
         edge="end"
         aria-label="settings" 
@@ -91,7 +97,6 @@ const SettingsControl: React.FC<SettingsControlProps> = ({ aboveControlsRef = nu
         classes={menuClasses}
         disablePortal={true}
         keepMounted={true}
-        style={paperStyles}
       >
         <MenuItem 
           divider={true} 
@@ -129,7 +134,7 @@ const SettingsControl: React.FC<SettingsControlProps> = ({ aboveControlsRef = nu
           })
         }
       </Menu>
-    </div>
+    </Box>
   );
 };
 

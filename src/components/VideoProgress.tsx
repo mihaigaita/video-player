@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 import Slider from '@material-ui/core/Slider';
 
 import { formatSecondsToTimeDuration } from '../utils/functions';
@@ -10,22 +11,11 @@ import TimePreview from './TimePreview';
 import SeekPreview from './SeekPreview';
 
 
-const useGeneralStyles = makeStyles(theme => ({
-  top: {
-    position: 'relative',
-    margin: theme.spacing(0, 4),
-  },
-  progressContainer: {
-    position: 'relative',
-    height: 16,
-  },
-}));
-
-type ProgressStyleInputs = {
+type ProgressStyleInputsType = {
   previewEnabled: boolean,
 };
 
-const useProgressStyles = makeStyles<Theme, ProgressStyleInputs>({
+const useProgressStyles = makeStyles<Theme, ProgressStyleInputsType>({
   root: {
     display: 'block',
     position: 'absolute',
@@ -60,18 +50,23 @@ const useProgressStyles = makeStyles<Theme, ProgressStyleInputs>({
 const VideoProgress: React.FC<{}> = () => {
   const videoStore = React.useContext(VideoPlayerContext);
 
-  const progressStyleInputs: ProgressStyleInputs = React.useMemo(() => ({
+  const progressStyleInputs: ProgressStyleInputsType = React.useMemo(() => ({
     previewEnabled: videoStore.previewPeekIsActive,
   }), [videoStore.previewPeekIsActive]);
 
   const progressClasses = useProgressStyles(progressStyleInputs);
-  const generalClasses = useGeneralStyles();
 
   return (
-    <div className={generalClasses.top}>
+    <Box 
+      position='relative'
+      marginX={4}
+    >
       <TimePreview />
       
-      <div className={generalClasses.progressContainer}>
+      <Box
+        position='relative'
+        height='16px'
+      >
         <Slider
           onMouseMove={videoStore.handlePreviewSeek}
           onMouseLeave={videoStore.cancelPreviewSeek}
@@ -89,8 +84,8 @@ const VideoProgress: React.FC<{}> = () => {
         />
 
         <SeekPreview />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
 import { flowResult } from 'mobx';
-import clsx from 'clsx';
+import { CancellablePromise } from 'mobx/dist/api/flow';
+
+import { makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 
 import VideoProgress from './VideoProgress';
 import VolumeControl from './VolumeControl';
@@ -12,38 +14,11 @@ import PlaybackControl from './PlaybackControl';
 import VideoClickFeedback from './VideoClickFeedback';
 import ElapsedTime from './ElapsedTime';
 import { VideoPlayerContext } from './VideoPlayer';
-import { CancellablePromise } from 'mobx/dist/api/flow';
 
 
-const useVideoStyles = makeStyles((theme) => ({
-  controlsRoot: {
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    zIndex: 1,
-    top: 0,
-    left: 0,
-  },
-  buttons: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing(2),
-    padding: theme.spacing(0, 5),
-  },
-  aboveControls: {
-    flexGrow: 1,
-  },
+const useVideoStyles = makeStyles({
   controlsAndProgress: {
     background: 'linear-gradient(0deg, #000a, transparent)',
-  },
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-    zIndex: 2,
   },
   controlsAndProgressActive: {
     opacity: 1,
@@ -59,11 +34,7 @@ const useVideoStyles = makeStyles((theme) => ({
     transition: 'all 0.2s linear',
     cursor: 'none',
   },
-  controlGroup: {
-    display: 'flex',
-    alignItems: 'center',
-  }, 
-}));
+});
 
 const VideoControls: React.FC<{}> = () => {
   const classes = useVideoStyles();
@@ -88,52 +59,72 @@ const VideoControls: React.FC<{}> = () => {
   }, [videoStore, pendingControlHideHandler]);
 
   return (
-    <div 
+    <Box 
       onMouseLeave={hideControlsHandler}
       onMouseEnter={activateControlsHandler}
       onClick={activateControlsHandler}
       onMouseMove={activateControlsHandler}
       onTouchMove={activateControlsHandler}
       onTouchStart={activateControlsHandler}
-      className={clsx(
-        classes.controlsRoot,
-        videoStore.userIsIdle ? classes.cursorOff : classes.cursorOn
-      )}
+      className={videoStore.userIsIdle ? classes.cursorOff : classes.cursorOn}
+      height='100%'
+      width='100%'
+      position='absolute'
+      zIndex={1}
+      top={0}
+      left={0}
     >
       <VideoClickFeedback />
 
-      <div className={clsx(
-          classes.container,
-          videoStore.userIsIdle ? classes.controlsAndProgressIdle : classes.controlsAndProgressActive,
-        )}
+      <Box 
+        className={videoStore.userIsIdle 
+          ? classes.controlsAndProgressIdle 
+          : classes.controlsAndProgressActive}
+        display='flex'
+        flexDirection='column'
+        width='100%'
+        height='100%'
+        position='relative'
+        zIndex={2}
       >
-        <div 
-          className={classes.aboveControls} 
+        <Box 
+          flexGrow={1}
+          // @ts-expect-error
           ref={setAboveControlsRef}
           onClick={videoStore.handleVideoClick}
         />
 
-        <div className={classes.controlsAndProgress}>
+        <Box className={classes.controlsAndProgress}>
           <VideoProgress />
 
-          <div className={classes.buttons}>
-            <div 
-              className={classes.controlGroup}
+          <Box 
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
+            marginBottom={2}
+            paddingX={5}
+          >
+            <Box 
+              display='flex'
+              alignItems='center'
               onMouseLeave={videoStore.handleVolumeOnHoverExit}
             >
               <PlaybackControl />
               <VolumeControl />
               <ElapsedTime />
-            </div>
+            </Box>
 
-            <div className={classes.controlGroup}>
+            <Box
+              display='flex'
+              alignItems='center'
+            >
               <SettingsControl aboveControlsRef={aboveControlsRef} />
               <FullscreenControl />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

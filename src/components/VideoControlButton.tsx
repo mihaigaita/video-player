@@ -12,13 +12,13 @@ const useControlStyles = makeStyles({
   }
 });
 
-type VideoControlButtonProps = {
+type VideoControlButtonPropsType = {
   children: React.ReactElement,
   onClick: React.EventHandler<React.SyntheticEvent>,
   [otherProps: string]: any,
 };
 
-const VideoControlButton: React.FC<VideoControlButtonProps> = ({ children, onClick, ...otherProps }) => {
+const VideoControlButton: React.FC<VideoControlButtonPropsType> = ({ children, onClick, ...otherProps }) => {
   const classes = useControlStyles();
 
   return (
