@@ -11,14 +11,16 @@ const SeekPreview: React.FC<{}> = () => {
 
   return (
     <Box 
-      top="50%"
       position="absolute"
-      height="5px"
-      marginTop="-2.5px"
+      height={`calc(5 / 16 * 100%)`}
       left={0}
       zIndex={-1}
-      bgcolor="text.secondary"
+      bgcolor="grey.800"
       width={`${videoStore.seekHoverPositionPercent}%`}
+      style={{ 
+        transform: `scaleY(${videoStore.fullscreenIsActive ? 1.4 : 1})`,
+        transformOrigin: 'top',
+      }}
     />
   );
 };

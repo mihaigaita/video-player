@@ -13,35 +13,44 @@ import SeekPreview from './SeekPreview';
 
 type ProgressStyleInputsType = {
   previewEnabled: boolean,
+  fullscreenIsActive: boolean,
+};
+
+const getProgressScale = (inputs: ProgressStyleInputsType): number => {
+  const { fullscreenIsActive, previewEnabled } = inputs;
+
+  const fullscreenScaleModifier = fullscreenIsActive ? 1.4 : 1;
+  const hoveredScaleModifier = previewEnabled ? 1 : 0.6;
+
+  return fullscreenScaleModifier * hoveredScaleModifier;
 };
 
 const useProgressStyles = makeStyles<Theme, ProgressStyleInputsType>({
   root: {
-    display: 'block',
+    display: 'flex',
+    alignItems: 'center',
     position: 'absolute',
     top: 0,
     padding: 0,
-    height: 16,
+    height: '100%',
+    transform: (inputs) => `scaleY(${getProgressScale(inputs)})`,
+    transformOrigin: 'center',
   },
   thumb: {
-    top: '50%',
-    marginTop: -6,
     '&:focus, &:hover, &$active': {
       boxShadow: 'unset',
     },
+    marginTop: 'unset',
+    transform: (inputs) => `scaleX(${getProgressScale(inputs)})`,
     opacity: ({ previewEnabled }) => previewEnabled ? 1 : 0,
   },
   active: {},
   track: {
-    top: '50%',
-    height: ({ previewEnabled }) => previewEnabled ? 5 : 3,
-    marginTop: ({ previewEnabled }) => previewEnabled ? -2.5 : -1.5,
+    height: 'calc(5 / 16 * 100%)',
     pointerEvents: 'none',
   },
   rail: {
-    top: '50%',
-    height: ({ previewEnabled }) => previewEnabled ? 5 : 3,
-    marginTop: ({ previewEnabled }) => previewEnabled ? -2.5 : -1.5,
+    height: 'calc(5 / 16 * 100%)',
     backgroundColor: 'gray',
     opacity: 0.4,
   },
@@ -52,7 +61,8 @@ const VideoProgress: React.FC<{}> = () => {
 
   const progressStyleInputs: ProgressStyleInputsType = React.useMemo(() => ({
     previewEnabled: videoStore.previewPeekIsActive,
-  }), [videoStore.previewPeekIsActive]);
+    fullscreenIsActive: videoStore.fullscreenIsActive,
+  }), [videoStore.previewPeekIsActive, videoStore.fullscreenIsActive]);
 
   const progressClasses = useProgressStyles(progressStyleInputs);
 
@@ -66,6 +76,8 @@ const VideoProgress: React.FC<{}> = () => {
       <Box
         position='relative'
         height='16px'
+        display='flex'
+        alignItems='center'
       >
         <Slider
           onMouseMove={videoStore.handlePreviewSeek}

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Slider from '@material-ui/core/Slider';
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
@@ -11,11 +11,14 @@ import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VideoControlButton from './VideoControlButton';
 import { VideoPlayerContext } from './VideoPlayer';
 
+type SliderStylesInputsType = {
+  fullscreenIsActive: boolean,
+};
 
-const useSliderStyles = makeStyles((theme) => ({
+const useSliderStyles = makeStyles<Theme, SliderStylesInputsType>((theme) => ({
   root: {
     display: 'inline-block',
-    margin: theme.spacing(0, 2, 0, 4),
+    margin: theme.spacing(0, 4, 0, 4),
   },
   track: {
     height: 4,
@@ -25,16 +28,27 @@ const useSliderStyles = makeStyles((theme) => ({
     backgroundColor: 'gray',
   },
   thumb: {
-    marginTop: -4,
+    width: 16,
+    height: 16,
+    marginTop: -6,
     '&:focus, &:hover, &$active': {
       boxShadow: 'unset',
-    }
+    },
+    transform: ({ fullscreenIsActive }) => `scale(${fullscreenIsActive ? 1 : 0.75})`,
+    transition: 'transform .2s linear',
   },
 }));
 
 const VolumeControl: React.FC<{}> = () => {
   const videoStore = React.useContext(VideoPlayerContext);
-  const sliderClasses = useSliderStyles();
+
+  const sliderStylesInputs = React.useMemo(() => ({
+    fullscreenIsActive: videoStore.fullscreenIsActive,
+  }), [videoStore.fullscreenIsActive]);
+  const sliderClasses = useSliderStyles(sliderStylesInputs);
+
+  const sliderMaxWidth = videoStore.fullscreenIsActive ? '100px' : '76px';
+  const sliderDisplayWidth = videoStore.pointerIsHovering ? sliderMaxWidth : '0px';
 
   return (
     <Box 
@@ -60,7 +74,7 @@ const VolumeControl: React.FC<{}> = () => {
         display='flex'
         alignItems='center'
         overflow='hidden'
-        width={videoStore.pointerIsHovering ? '76px' : '0px'} 
+        width={sliderDisplayWidth} 
         style={{ transition: 'width .2s linear' }}
       >
         <Slider
