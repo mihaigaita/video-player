@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { flowResult } from 'mobx';
-import { CancellablePromise } from 'mobx/dist/api/flow';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
@@ -39,33 +37,16 @@ const useVideoStyles = makeStyles({
 const VideoControls: React.FC<{}> = () => {
   const classes = useVideoStyles();
   const videoStore = React.useContext(VideoPlayerContext);
-  const pendingControlHideHandler = React.useRef<CancellablePromise<void> | null>(null);
   const [aboveControlsRef, setAboveControlsRef] = React.useState<HTMLDivElement | null>(null);
-
-  const activateControlsHandler = React.useCallback(() => {
-    // Cancel any existing scheduled hiding of video controls 
-    pendingControlHideHandler?.current?.cancel();
-
-    const pendingHideHandle = flowResult(videoStore.setUserAsActive());
-    pendingHideHandle.catch(() => null);
-    pendingControlHideHandler.current = pendingHideHandle;
-  }, [videoStore, pendingControlHideHandler]);
-
-  const hideControlsHandler = React.useCallback(() => {
-    // Cancel any existing scheduled hiding of video controls
-    pendingControlHideHandler?.current?.cancel();
-
-    videoStore.setUserAsIdle();
-  }, [videoStore, pendingControlHideHandler]);
 
   return (
     <Box 
-      onMouseLeave={hideControlsHandler}
-      onMouseEnter={activateControlsHandler}
-      onClick={activateControlsHandler}
-      onMouseMove={activateControlsHandler}
-      onTouchMove={activateControlsHandler}
-      onTouchStart={activateControlsHandler}
+      onMouseLeave={videoStore.hideControlsHandler}
+      onMouseEnter={videoStore.activateControlsHandler}
+      onClick={videoStore.activateControlsHandler}
+      onMouseMove={videoStore.activateControlsHandler}
+      onTouchMove={videoStore.activateControlsHandler}
+      onTouchStart={videoStore.activateControlsHandler}
       className={videoStore.userIsIdle ? classes.cursorOff : classes.cursorOn}
       height='100%'
       width='100%'

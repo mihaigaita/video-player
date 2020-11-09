@@ -13,7 +13,7 @@ const PlaybackControl: React.FC<{}> = () => {
 
   return (
     <VideoControlButton 
-      onClick={videoStore.handlePlayPause} 
+      onClick={videoStore.togglePlayback} 
       edge="end" 
       aria-label="play or pause"
     >

@@ -9,14 +9,15 @@ Screenshot:
 [Click here for a DEMO of the player online](https://mihaigaita.github.io/video-player/build/index.html)
 
 ## Implemented Features
+- State management using [MobX](https://mobx.js.org/)
+- Material Design System via [Material-UI](https://material-ui.com/) React library
+- Keyboard control of video
 - Progress bar (with expected seek time preview on hover and ability to drag & hold)
 - Play / Pause Button
 - Mute / Un-mute Sound Button (with Slider)
 - Settings Button (used to change playback speed)
 - Full Screen Button
 - Controls and Mouse cursor hide automatically after 4s after mouse movement stops during playback
-- State management using [MobX](https://mobx.js.org/)
-- Material Design System via [Material-UI](https://material-ui.com/) React library
 
 ### Implemented Animations and Visual Effects
 - Progress Bar expands vertically on hover
@@ -29,8 +30,6 @@ Screenshot:
 
 ### Future Improvements
 - Add Tooltips
-- Add playback control using standard key presses
-- Replace divs used only for styling with Box elements from Material-UI to emulate Atomic CSS more idiomatically
 - Add Jest unit testing
 - Add ESLint best-practice rules including security
 

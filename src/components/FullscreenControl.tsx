@@ -13,7 +13,7 @@ const FullScreenControl: React.FC<{}> = () => {
 
   return (
     <VideoControlButton 
-      onClick={videoStore.handleFullscreen}
+      onClick={videoStore.toggleFullscreen}
       aria-label="full-screen"
     >
       {videoStore.fullscreenIsActive 

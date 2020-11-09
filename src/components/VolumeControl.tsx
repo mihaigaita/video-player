@@ -64,7 +64,7 @@ const VolumeControl: React.FC<{}> = () => {
       >
         {((videoStore.volumeLevel <= 0) || videoStore.volumeIsMuted) 
           ? <VolumeOffIcon />
-          : (videoStore.volumeLevel >= 0.5) 
+          : (videoStore.volumeLevel >= 50) 
             ? <VolumeUpIcon />
             : <VolumeDownIcon />
         }
@@ -80,8 +80,8 @@ const VolumeControl: React.FC<{}> = () => {
         <Slider
           classes={sliderClasses}
           min={0}
-          step={0.01}
-          max={1}
+          step={1}
+          max={100}
           color="secondary"
           onChange={videoStore.handleVolumeChange}
           valueLabelDisplay="off"

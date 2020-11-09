@@ -34,7 +34,7 @@ const useProgressStyles = makeStyles<Theme, ProgressStyleInputsType>({
     padding: 0,
     height: '100%',
     transform: (inputs) => `scaleY(${getProgressScale(inputs)})`,
-    transformOrigin: 'center',
+    transformOrigin: 'center center',
   },
   thumb: {
     '&:focus, &:hover, &$active': {
